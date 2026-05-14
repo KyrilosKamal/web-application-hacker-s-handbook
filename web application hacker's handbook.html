@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <title>الشرح الكامل والمتعمق – The Web Application Hacker's Handbook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.7;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        /* sidebar */
+        .sidebar {
+            flex: 1.2;
+            min-width: 270px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: 0 0 15px rgba(46, 160, 67, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.6rem;
+            color: #39d353;
+            border-right: 4px solid #39d353;
+            padding-right: 14px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(57, 211, 83, 0.4);
+        }
+
+        .chapter-list {
+            list-style: none;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .chapter-list li {
+            margin: 8px 0;
+        }
+
+        .chapter-btn {
+            background: none;
+            border: 1px solid transparent;
+            width: 100%;
+            text-align: right;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #c9d1d9;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .chapter-btn.active {
+            background: rgba(57, 211, 83, 0.1);
+            color: #39d353;
+            border: 1px solid #39d353;
+            box-shadow: inset 0 0 10px rgba(57, 211, 83, 0.2);
+        }
+
+        .chapter-btn:hover:not(.active) {
+            background: #21262d;
+            border: 1px solid #30363d;
+        }
+
+        .progress-area {
+            margin-top: 30px;
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .progress-bar {
+            background: #21262d;
+            height: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            overflow: hidden;
+            border: 1px solid #30363d;
+        }
+
+        .progress-fill {
+            background: #39d353;
+            width: 0%;
+            height: 100%;
+            transition: width 0.4s ease-out;
+            box-shadow: 0 0 10px #39d353;
+        }
+
+        /* main */
+        .main-content {
+            flex: 3;
+            min-width: 340px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 30px 35px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .chapter-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #39d353;
+            border-right: 5px solid #39d353;
+            padding-right: 18px;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(57, 211, 83, 0.3);
+        }
+
+        .content-box {
+            max-height: 550px;
+            overflow-y: auto;
+            padding: 15px;
+            margin-bottom: 30px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #8b949e;
+        }
+
+        .content-box strong {
+            color: #c9d1d9;
+        }
+
+        .content-box p,
+        .content-box ul,
+        .content-box pre {
+            margin-bottom: 1rem;
+        }
+
+        .quiz-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border-right: 4px solid #58a6ff;
+        }
+        
+        .quiz-block h3 {
+            color: #58a6ff;
+            margin-bottom: 15px;
+        }
+
+        .quiz-question {
+            background: #161b22;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #30363d;
+        }
+
+        .quiz-question p {
+            color: #c9d1d9;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+
+        .quiz-option {
+            display: block;
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .quiz-option:hover {
+            border-color: #58a6ff;
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        button {
+            background: #21262d;
+            color: #39d353;
+            border: 1px solid #30363d;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: rgba(57, 211, 83, 0.1);
+            border-color: #39d353;
+            box-shadow: 0 0 10px rgba(57, 211, 83, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .review-item {
+            background: #0d1117;
+            padding: 15px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-right: 3px solid #bc8cff;
+        }
+
+        .add-review {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            background: #161b22;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #30363d;
+        }
+
+        .add-review input,
+        .add-review textarea {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: #39d353;
+            font-family: inherit;
+        }
+        
+        .add-review input:focus,
+        .add-review textarea:focus {
+            outline: none;
+            border-color: #bc8cff;
+            box-shadow: 0 0 8px rgba(188, 140, 255, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid #30363d;
+        }
+
+        /* Scrollbar customization */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #39d353; 
+        }
+
+        @media (max-width: 850px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <h2>📚 فصول الكتاب</h2>
+            <ul class="chapter-list" id="chapterList"></ul>
+            <div class="progress-area">
+                <strong>📊 الإنجاز الإجمالي</strong>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressPercent">0%</div>
+            </div>
+        </aside>
+        <main class="main-content" id="mainContent"></main>
+    </div>
+
+    <script>
+        // ============================================================
+        // بيانات الكتاب الكاملة – شرح مفصل لكل فصل + أسئلة متقدمة
+        // ============================================================
+        const chapters = [
+            {
+                id: 0, title: "📖 المقدمة", content: `<p><strong>عن الكتاب:</strong> "The Web Application Hacker's Handbook" من تأليف Dafydd Stuttard و Marcus Pinto هو المرجع الأهم في مجال اختبار اختراق تطبيقات الويب. يُغطي الكتاب 20 فصلاً تغطي الجوانب العملية والنظرية لاكتشاف واستغلال الثغرات الأمنية.</p>
+        <p><strong>منهجية الكتاب:</strong> يعتمد على المزج بين الاستكشاف اليدوي والأتمتة الذكية، مع أمثلة حقيقية من آلاف التطبيقات التي اختبرها المؤلفان. يشمل: رسم خرائط التطبيق، تجاوز ضوابط العميل، مهاجمة المصادقة والجلسات، التحكم بالوصول، حقن الكود (SQL، أوامر، XPath، LDAP، SMTP)، ثغرات المسار، منطق التطبيق، مهاجمة المستخدمين (XSS، CSRF، تثبيت الجلسة)، الأتمتة، تسرب المعلومات، التطبيقات المجمعة، بنية التطبيق، خادم الويب، مراجعة الكود المصدري، الأدوات والمنهجية.</p>`, questions: [{ text: "أي من الآتي يمثل المشكلة الجذرية التي يواجهها كل تطبيق ويب حسب الفصل الأول؟", options: ["ضعف جدران الحماية", "إمكانية إرسال المستخدم مدخلات عشوائية غير موثوقة", "عدم استخدام SSL"], ans: 1 }, { text: "ما هي أكثر ثغرة انتشاراً وفق إحصائيات المؤلفين على 100+ تطبيق؟", options: ["SQL Injection", "Cross‑Site Scripting (XSS)", "Broken Access Control"], ans: 1 }]
+            },
+            {
+                id: 1, title: "الفصل 1 – عدم أمان تطبيقات الويب", content: `<p><strong>المشكلة الأساسية:</strong> أي تطبيق ويب يستقبل مدخلات من المستخدم، وهذه المدخلات يمكن أن تكون خبيثة بالكامل. لا يمكن الوثوق بأي شيء يصل من العميل.</p>
+        <p><strong>إحصائيات خطيرة (أكثر من 100 تطبيق):</strong></p>
+        <ul><li>XSS (Cross‑Site Scripting): 91%</li><li>كسر التحكم في الوصول: 78%</li><li>ثغرات المصادقة: 67%</li><li>حقن SQL: 36%</li><li>تسرب المعلومات: 81%</li></ul>
+        <p><strong>عوامل تفاقم المشكلة:</strong> التطوير الداخلي (كل تطبيق فريد)، البساطة الخادعة (سهولة الكتابة، صعوبة التأمين)، قيود الوقت والموارد، تطور التهديدات السريع، وتقنيات ممتدة (مثل AJAX).</p>
+        <p><strong>الجدار الأمني الجديد:</strong> لم تعد جدران الحماية كافية. التطبيق نفسه هو خط الدفاع الأول. ثغرة واحدة في سطر من الكود قد تسمح باختراق الخادم بالكامل.</p>`, questions: [{ text: "ما هو السبب الذي يجعل SSL/HTTPS وحده غير كافٍ لحماية تطبيق ويب؟", options: ["لأن SSL لا يمنع هجمات XSS أو SQL Injection", "لأن SSL يُشفر البيانات فقط أثناء النقل", "كل ما سبق صحيح"], ans: 2 }, { text: "أي من العوامل التالية تجعل تطبيقات الويب أكثر عرضة للثغرات مقارنة بالبرامج التقليدية؟", options: ["الاعتماد على التطوير الداخلي وغياب التقييس", "قلة الوعي الأمني لدى المطورين", "كل ما سبق"], ans: 2 }]
+            },
+            {
+                id: 2, title: "الفصل 2 – آليات الدفاع الأساسية", content: `<p><strong>ثلاث آليات رئيسية للتحكم في وصول المستخدم:</strong> المصادقة (إثبات الهوية)، إدارة الجلسات (ربط الطلبات)، والتحكم في الوصول (الصلاحيات).</p>
+        <p><strong>معالجة المدخلات:</strong> الطرق الأربع الأساسية: القائمة السوداء (Blacklist – غير فعالة)، القائمة البيضاء (Whitelist – الأفضل)، التنقية (Sanitization)، والتحقق الدلالي (Semantic).</p>
+        <p><strong>التحقق عبر الحدود (Boundary Validation):</strong> كل مكون يعامل مدخلاته كبيانات خبيثة محتملة، ويقوم بتنقيتها قبل الاستخدام. هذا يمنع هجمات الدرجة الثانية (Second‑order).</p>
+        <p><strong>التعامل مع المهاجم:</strong> إخفاء رسائل التصحيح، تسجيل الأحداث، تنبيه المسؤولين، وإنهاء الجلسة أو إبطاء الاستجابة عند كشف الأنشطة المشبوهة.</p>`, questions: [{ text: "أي من طرق معالجة المدخلات تعتبر الأكثر أماناً في التصميم الدفاعي؟", options: ["Blacklist (قائمة الحظر)", "Whitelist (القائمة البيضاء)", "التنقية العشوائية"], ans: 1 }, { text: "ما المقصود بـ 'التحقق عبر الحدود' (Boundary Validation)؟", options: ["التحقق فقط عند مدخل الشبكة", "التحقق عند كل طبقة وكل مكون يستهلك البيانات", "التحقق فقط في قاعدة البيانات"], ans: 1 }]
+            },
+            {
+                id: 3, title: "الفصل 3 – تقنيات تطبيقات الويب", content: `<p><strong>بروتوكول HTTP:</strong> طلبات (GET, POST, HEAD, TRACE, OPTIONS, PUT) وردود (200 نجاح، 302 إعادة توجيه، 401 غير مصرح، 403 ممنوع، 404 غير موجود، 500 خطأ خادم).</p>
+        <p><strong>رؤوس مهمة:</strong> Host (للاستضافة الافتراضية)، Cookie (نقل حالة العميل)، Referer (مصدر الطلب – يمكن تزويره بسهولة)، User-Agent.</p>
+        <p><strong>التشفيرات الأساسية:</strong> URL Encoding (%20 للمسافة، %3d لـ =)، HTML Encoding (&lt; لـ <)، Base64 (نقل بيانات ثنائية)، وUnicode (يمكن استغلالها لتجاوز المرشحات).</p>
+        <p><strong>HTTPS:</strong> يؤمن النقل فقط، لكنه لا يمنع هجمات مثل XSS أو حقن SQL أو ثغرات المنطق.</p>`, questions: [{ text: "أي من رؤوس HTTP يمكن للمستخدم تزويره بسهولة باستخدام وكيل اعتراض؟", options: ["Cookie", "Referer", "جميع ما سبق"], ans: 2 }, { text: "لماذا لا يمنع HTTPS ثغرات تطبيق الويب مثل SQL Injection؟", options: ["لأن HTTPS يُشفر فقط القناة بين المتصفح والخادم، ولا يتحقق من صحة المدخلات", "لأن HTTPS أبطأ من HTTP", "لأن HTTPS لا يدعم التشفير"], ans: 0 }]
+            },
+            {
+                id: 4, title: "الفصل 4 – رسم خريطة التطبيق", content: `<p><strong>الزحف اليدوي والآلي:</strong> استخدام Burp Suite أو WebScarab لاستكشاف الروابط والنماذج. التقاط حركة المرور وتحليلها.</p>
+        <p><strong>اكتشاف المحتوى المخفي:</strong> تقنيات القوة الغاشمة للدليل والملفات (مثل admin.php, backup.zip). استخدام قوائم كلمات شائعة (كلمات من Nikto).</p>
+        <p><strong>الاستدلال من المحتوى:</strong> إذا وجدت AddDocument.jsp و ViewDocument.jsp، توقع وجود EditDocument.jsp و DeleteDocument.jsp.</p>
+        <p><strong>استخدام محركات البحث:</strong> site:target.com login، link:target.com، واستخدام أرشيف الإنترنت (Wayback Machine) لاسترجاع صفحات قديمة لم تُحذف من الخادم.</p>`, questions: [{ text: "أي من التقنيات التالية لا تعتمد على إرسال عدد كبير من الطلبات التخمينية؟", options: ["القوة الغاشمة للدليل", "الاستدلال من أنماط أسماء الملفات الموجودة", "فحص robots.txt"], ans: 1 }, { text: "ما فائدة استخدام 'Wayback Machine' في رسم خريطة التطبيق؟", options: ["لا فائدة", "اكتشاف محتوى قديم ما زال موجوداً على الخادم ولم يعد مرتبطاً", "تسريع الزحف"], ans: 1 }]
+            },
+            {
+                id: 5, title: "الفصل 5 – تجاوز ضوابط جانب العميل", content: `<p><strong>نقل البيانات عبر العميل:</strong> الحقول المخفية، الكوكيز، معاملات URL، وحتى رأس Referer يمكن تعديلها باستخدام وكيل اعتراض مثل Burp Proxy.</p>
+        <p><strong>تجاوز maxlength و JavaScript:</strong> إما اعتراض الطلب قبل الإرسال، أو تعطيل JavaScript، أو تعديل دالة التحقق في الاستجابة.</p>
+        <p><strong>المكونات السميكة:</strong> Java Applets (فك الترجمة باستخدام Jad أو Jode)، ActiveX Controls (هندسة عكسية باستخدام OllyDbg أو COMRaider)، وFlash (Flasm و Flare).</p>
+        <p><strong>ASP.NET ViewState:</strong> إذا لم يكن EnableViewStateMac مفعلاً، يمكن فك Base64 وتعديل البيانات وإعادة ترميزها. إذا كان مفعلاً، لا يمكن التعديل لكن قد يحتوي على معلومات حساسة تستحق القراءة.</p>`, questions: [{ text: "كيف يمكن تجاوز حقل مخفي يحتوي على سعر المنتج؟", options: ["لا يمكن تجاوزه", "استخدام وكيل اعتراض لتعديل القيمة قبل إرسال الطلب", "إضافة input جديد في HTML"], ans: 1 }, { text: "لماذا لا يُعتبر التحقق من جانب العميل (مثل JavaScript) كافياً لأمن التطبيق؟", options: ["لأن المستخدم يمكنه تعطيل JavaScript أو تعديل الطلب", "لأنه يبطئ التطبيق", "لأنه صعب البرمجة"], ans: 0 }]
+            },
+            {
+                id: 6, title: "الفصل 6 – مهاجمة المصادقة", content: `<p><strong>ثغرات التصميم الشائعة:</strong> كلمات مرور ضعيفة (password, admin)، عدم قفل الحساب بعد محاولات خاطئة (قوة غاشمة)، رسائل خطأ مفصلة تكشف وجود اسم المستخدم.</p>
+        <p><strong>ثغرات وظائف الدعم:</strong> تغيير كلمة المرور (يمكن إرسال طلب بدون المعامل القديم)، استعادة كلمة المرور (أسئلة ضعيفة أو رابط يمكن تخمينه)، 'تذكرني' (كوكي ثابت يمكن تزويره).</p>
+        <p><strong>ثغرات التنفيذ:</strong> Fail‑open login (عند حدوث استثناء يعتبر الدخول ناجحاً)، عيوب الدخول متعدد المراحل (تخطي مرحلة، تعديل بيانات بين المراحل).</p>
+        <p><strong>الدفاعات الفعالة:</strong> استخدام salted hash لكلمات المرور، قفل مؤقت للحساب (مثلاً 30 دقيقة بعد 3 محاولات)، إشعار المستخدم بآخر دخول وعدد المحاولات الفاشلة.</p>`, questions: [{ text: "أي من التالي يعتبر ثغرة تصميم خطيرة في المصادقة؟", options: ["استخدام HTTPS", "رسالة خطأ عامة 'فشل الدخول'", "رسالة تفصيلية 'اسم المستخدم غير موجود' مع إظهار الحقل"], ans: 2 }, { text: "ما هو 'Fail‑open login' وكيف يحدث؟", options: ["عندما يحدث استثناء في كود المصادقة ويعتبر الدخول ناجحاً", "عندما لا يتحقق الخادم من كلمة المرور", "عندما يكون قفل الحساب مفعلاً"], ans: 0 }]
+            },
+            {
+                id: 7, title: "الفصل 7 – مهاجمة إدارة الجلسات", content: `<p><strong>ثغرات توليد الرموز:</strong> رموز ذات معنى (user=daf;admin=false)، قابلة للتخمين (تسلسل رقمي 1000,1001,1002)، اعتماد على الوقت، أو مولد عشوائي ضعيف (java.util.Random يمكن توقعه من ناتج واحد).</p>
+        <p><strong>ثغرات التعامل مع الرموز:</strong> إرسال الرمز عبر HTTP (يُمكن اعتراضه)، ظهور الرمز في URL (يُسجل في سجلات الخادم والمتصفح وReferer)، عدم إنهاء الجلسة بعد الخروج، نطاق كوكي واسع (domain=.bank.com يسمح بتطبيقات أخرى بقراءة الكوكي).</p>
+        <p><strong>الدفاع المتقدم:</strong> رموز غير قابلة للتخمين (32+ بايت من مصدر عشوائي قوي)، secure flag، per‑page tokens (رموز ديناميكية لكل صفحة تمنع CSRF وتثبيت الجلسة).</p>`, questions: [{ text: "أي من الطرق التالية تمنع بشكل فعال هجوم تثبيت الجلسة (Session Fixation)؟", options: ["استخدام HTTPS فقط", "إصدار رمز جلسة جديد بعد نجاح المصادقة", "استخدام كوكيز بدون HttpOnly"], ans: 1 }, { text: "لماذا يعتبر ظهور رمز الجلسة في URL ثغرة أمنية؟", options: ["لأنه يجعل الرمز أطول", "لأنه قد يظهر في سجلات الخادم وفي رأس Referer عند زيارة روابط خارجية", "لأنه يبطئ التطبيق"], ans: 1 }]
+            },
+            {
+                id: 8, title: "الفصل 8 – مهاجمة التحكم في الوصول", content: `<p><strong>تسلية رأسية (Vertical):</strong> وصول مستخدم عادي إلى وظائف مدير (مثل /admin/panel.jsp).</p>
+        <p><strong>تسلية أفقية (Horizontal):</strong> وصول مستخدم إلى بيانات مستخدم آخر (مثل تغيير docid=123 إلى docid=124).</p>
+        <p><strong>أمثلة شائعة للثغرات:</strong> وظائف غير محمية بالكامل (تعتمد فقط على إخفاء URL)، تخطي مراحل في العمليات متعددة الخطوات، ملفات ثابتة (PDF) يمكن الوصول إليها مباشرة.</p>
+        <p><strong>اختبار فعال:</strong> استخدام عدة حسابات (مستخدم عادي ومدير) ومحاولة الوصول لكل مسار. في حالة وجود حساب واحد فقط، استخدام تقنيات تخمين المعرفات (الأرقام المتسلسلة، التواريخ).</p>`, questions: [{ text: "ما الفرق بين التسلية الرأسية (Vertical) والأفقية (Horizontal)؟", options: ["الرأسية تغير الدور (user→admin)، الأفقية تصل لبيانات مستخدم آخر بنفس الدور", "الرأسية تستخدم SQL injection", "لا فرق"], ans: 0 }, { text: "أي من العبارات التالية توضح لماذا الاعتماد على 'إخفاء المسار' (security by obscurity) غير آمن؟", options: ["لأن المسارات تظهر في شريط العنوان وسجل المتصفح ويمكن توقعها", "لأن جدران الحماية تمنعها", "لأنها تبطئ التطبيق"], ans: 0 }]
+            },
+            {
+                id: 9, title: "الفصل 9 – حقن الكود", content: `<p><strong>حقن SQL الكلاسيكي:</strong> إدخال ' لاختبار الخطأ، ثم ' or 1=1-- لتجاوز الدخول. استخدام UNION لاستخراج البيانات: تحديد عدد الأعمدة بـ NULL ثم تحديد عمود نصي لاستخراج أسماء الجداول والأعمدة ثم البيانات.</p>
+        <p><strong>SQL أعمى (Blind):</strong> استخدام استدلال بتغيير السلوك (مثل AND 1=1 يعيد نتائج و AND 1=2 لا يعيد) أو تأخير زمني (waitfor delay '0:0:5' في MS-SQL).</p>
+        <p><strong>حقن أوامر النظام:</strong> ; cat /etc/passwd, | dir, & whoami &، واستخدام $IFS بديلاً عن المسافات في Unix.</p>
+        <p><strong>حقن XPath, LDAP, SMTP:</strong> إضافة شروط جديدة، تعديل فلتر البحث، أو إضافة رؤوس بريد إلكتروني (Cc, Bcc).</p>`, questions: [{ text: "في حالة عدم ظهور أي رسالة خطأ أو نتائج استعلام، كيف يمكن تأكيد وجود Blind SQL Injection في MS-SQL؟", options: ["بإرسال ' OR '1'='1", "بإرسال '; waitfor delay '0:0:10'-- ومراقبة تأخر الاستجابة", "بفحص الكوكيز"], ans: 1 }, { text: "أي من تقنيات حقن أوامر النظام تعمل على أنظمة Unix لكن ليس Windows؟", options: ["استخدام &", "استخدام ;", "استخدام $IFS لتجاوز مرشحات المسافات"], ans: 2 }]
+            },
+            {
+                id: 10, title: "الفصل 10 – ثغرات المسار", content: `<p><strong>الهجوم الأساسي:</strong> تعديل معامل يشير إلى ملف ليحتوي على ../ للخروج من الدليل الحالي، مثل ../../../../etc/passwd.</p>
+        <p><strong>تجاوز المرشحات:</strong> ترميز مزدوج (%252e%252e%252f)، Unicode (..%c0%af)، null byte (file%00.jpg)، إضافة مسار معروف ثم ../ (images/../../config).</p>
+        <p><strong>الاستغلال:</strong> قراءة ملفات حساسة (passwd، config، logs)، كتابة ملفات في المجلدات القابلة للتنفيذ (مثل webshell).</p>`, questions: [{ text: "كيف يمكن تجاوز مرشح يمنع النمط '../' لكنه لا يعالج الترميزات؟", options: ["باستخدام ....//", "باستخدام %2e%2e%2f", "باستخدام %252e%252e%252f"], ans: 2 }, { text: "ما فكرة إضافة null byte (%00) في هجوم المسار؟", options: ["لإنهاء السلسلة النصية مبكراً وتجاهل الامتداد المضاف من التطبيق", "لتعطيل التطبيق", "لجعل الملف غير مرئي"], ans: 0 }]
+            },
+            {
+                id: 11, title: "الفصل 11 – منطق التطبيق", content: `<p><strong>ما هي ثغرات المنطق؟</strong> افتراضات خاطئة من المطور يمكن استغلالها. أمثلة حقيقية من الكتاب:</p>
+        <ul><li>حذف معامل 'كلمة المرور الحالية' في طلب تغيير كلمة المرور ← يصبح المستخدم مديراً.</li>
+        <li>تخطي مرحلة الدفع والذهاب مباشرة لمرحلة التأكيد ← طلب دون دفع.</li>
+        <li>إرسال معاملات من مرحلة مبكرة في مرحلة متأخرة (مثل السعر).</li>
+        <li>استخدام أرقام سالبة لتجاوز حدود التحويل المالي.</li>
+        <li>سباق (race condition) في تسجيل الدخول عند استخدام متغير static.</li></ul>
+        <p><strong>الاختبار:</strong> تغيير ترتيب الخطوات، حذف معاملات، إضافة معاملات غير متوقعة، تجربة قيم حدية (سالب، كبير، صفر).</p>`, questions: [{ text: "أي من الأمثلة التالية يعتبر ثغرة منطق تطبيق وليس ثغرة تقنية (مثل SQLi)؟", options: ["تجاوز مرحلة الدفع بالذهاب مباشرة لمرحلة التأكيد", "تعديل معرف docid لعرض مستند آخر", "إدخال ' في حقل البحث"], ans: 0 }, { text: "كيف يمكن اكتشاف ثغرات المنطق أثناء الاختبار؟", options: ["باستخدام ماسح ثغرات آلي", "بتغيير تسلسل العمليات وحذف معاملات بطريقة غير متوقعة", "بفحص رأس Server فقط"], ans: 1 }]
+            },
+            {
+                id: 12, title: "الفصل 12 – مهاجمة المستخدمين الآخرين", content: `<p><strong>أنواع XSS:</strong> Reflected (تظهر في الرد فوراً)، Stored (تُخزن ثم تُعرض)، DOM‑based (تُنفذ عبر كود JavaScript في المتصفح دون إرسالها للخادم).</p>
+        <p><strong>استغلال XSS:</strong> سرقة الجلسة (document.cookie)، تشويه الموقع، إضافة طروادة (نموذج دخول مزيف)، إجبار المستخدم على إجراءات (CSRF).</p>
+        <p><strong>تجاوز مرشحات XSS:</strong> <ScRiPt>، <scr<script>ipt>، ترميز UTF‑7، null bytes، استخدام أحداث HTML (onerror, onload).</p>
+        <p><strong>CSRF (تزوير الطلبات):</strong> استغلال حقيقة أن المتصفح يرسل الكوكيز تلقائياً مع أي طلب، حتى لو جاء من موقع آخر. الوقاية: استخدام رموز غير قابلة للتخمين في كل طلب.</p>`, questions: [{ text: "أي نوع من XSS لا يظهر أبداً في رد الخادم، ويتم تنفيذه بالكامل في المتصفح؟", options: ["Reflected XSS", "Stored XSS", "DOM‑based XSS"], ans: 2 }, { text: "ما هي آلية الدفاع الأكثر فعالية ضد هجمات CSRF (Cross-Site Request Forgery)؟", options: ["استخدام Referer header", "إضافة رمز عشوائي غير متوقع (CSRF token) في كل طلب حساس", "استخدام HTTPS فقط"], ans: 1 }]
+            },
+            {
+                id: 13, title: "الفصل 13 – أتمتة الهجمات", content: `<p><strong>استخدامات الأتمتة:</strong> تعداد المعرفات الصالحة (أسماء المستخدمين، أرقام المستندات)، استخراج البيانات (الملفات الشخصية لجميع المستخدمين)، Fuzzing (اختبار كل المعاملات بحمولات هجومية).</p>
+        <p><strong>كشف الإصابات:</strong> طول الرد، رمز HTTP، وجود نصوص محددة (مثل 'Invalid' أو 'Welcome')، وقت الاستجابة، رأس Set-Cookie.</p>
+        <p><strong>أدوات الأتمتة:</strong> Burp Intruder (مع أنماط Sniper, Battering ram, Pitchfork, Cluster bomb)، وسكريبتات مخصصة بلغة جافا أو بايثون.</p>`, questions: [{ text: "أي نمط من أنماط Burp Intruder يغير معامل واحد فقط في كل مرة مع تكرار كل الحمولات عليه قبل الانتقال للمعامل التالي؟", options: ["Sniper", "Battering ram", "Cluster bomb"], ans: 0 }, { text: "ما هي أفضل مؤشرات كشف 'الإصابة' عند تعداد أرقام المستندات؟", options: ["لون الصفحة", "طول الرد أو رمز HTTP 200 مقابل 404", "وجود صوت"], ans: 1 }]
+            },
+            {
+                id: 14, title: "الفصل 14 – تسرب المعلومات", content: `<p><strong>أخطاء مفيدة:</strong> رسائل الخطأ الخاصة بالسكريبت (تكشف رقم السطر)، Stack traces (تكشف أسماء المكونات وإصداراتها)، أخطاء قاعدة البيانات (قد تعرض الاستعلام نفسه).</p>
+        <p><strong>استغلال الأخطاء:</strong> في MS-SQL، خطأ تحويل النص إلى رقم يعرض النص الأصلي، مما يمكن استخدامه لاستخراج بيانات (مثل معرفة @@version).</p>
+        <p><strong>الاستدلال (Inference):</strong> فروق زمنية (معالجة اسم مستخدم صالح تستغرق وقتاً أطول)، سلوك مختلف عند وجود بيانات معينة.</p>`, questions: [{ text: "كيف يمكن استغلال خطأ ODBC الذي يقول 'Syntax error converting the varchar value ... to int' لصالح المهاجم؟", options: ["لا يمكن استغلاله", "يُستخدم لعرض قيمة النص الذي تسبب في الخطأ، مثل نتيجة استعلام فرعي", "يُستخدم لتعطيل الخادم"], ans: 1 }, { text: "ما هي المعلومات التي يمكن أن يكشفها Stack trace للمهاجم؟", options: ["كلمات المرور المشفرة", "أسماء الدوال والمكتبات المستخدمة، وإصدارات الإطار", "محتوى قاعدة البيانات"], ans: 1 }]
+            },
+            {
+                id: 15, title: "الفصل 15 – مهاجمة التطبيقات المجمعة", content: `<p><strong>Buffer Overflows:</strong> Stack overflow (الكتابة فوق عنوان العودة)، Heap overflow (الكتابة فوق بنى التحكم)، Off‑by‑one (كتابة بايت واحد خارج المخزن).</p>
+        <p><strong>Integer Vulnerabilities:</strong> Integer overflow (تجاوز الحد الأعلى فيرجع رقم صغير)، Signedness errors (الأعداد السالبة تعامل كموجبة كبيرة).</p>
+        <p><strong>Format String:</strong> استخدام %n, %s للكتابة في عناوين الذاكرة.</p>
+        <p><strong>الاكتشاف:</strong> إرسال سلاسل طويلة جداً (1100, 4200, 33000 بايت) ومراقبة الأعطال (HTTP 500، انقطاع الاتصال، توقف الخدمة).</p>`, questions: [{ text: "أي من هذه الثغرات ناتجة عن خلل في إدارة المخازن المؤقتة في لغة C/C++؟", options: ["SQL Injection", "Buffer Overflow", "XSS"], ans: 1 }, { text: "ما هو Off‑by‑one vulnerability؟", options: ["كتابة بايت واحد خارج حدود المخزن المخصص", "كتابة 100 بايت", "ثغرة في التشفير"], ans: 0 }]
+            },
+            {
+                id: 16, title: "الفصل 16 – بنية التطبيق", content: `<p><strong>البنية متعددة الطبقات:</strong> عرض (Presentation)، منطق (Application)، بيانات (Data). ثغرات الثقة: الطبقات تثق ببعضها، فإذا اخترقت طبقة التطبيق (مثلاً SQL injection)، فإن قاعدة البيانات تنفذ كل الأوامر دون تحقق إضافي.</p>
+        <p><strong>البيئات المستضافة المشتركة:</strong> عميل خبيث يرفع سكريبت خلفي (backdoor) يمكنه الوصول إلى ملفات العملاء الآخرين. ثغرة في تطبيق (مثل Path traversal) يمكن أن تعرض بيانات جميع التطبيقات المجاورة.</p>
+        <p><strong>الوقاية:</strong> عزل الحسابات (كل عميل بحساب نظام تشغيل منفصل)، قواعد بيانات منفصلة، استخدام أقل الصلاحيات الممكنة لكل مكون.</p>`, questions: [{ text: "لماذا تُعتبر البيئات المستضافة المشتركة (Shared Hosting) أكثر خطورة من الخوادم المخصصة؟", options: ["لأنها أبطأ", "لأن اختراق تطبيق واحد قد يؤدي إلى اختراق باقي التطبيقات على الخادم نفسه", "لأن دعمها الفني ضعيف"], ans: 1 }, { text: "كيف يمكن تقليل الضرر الناتج عن اختراق طبقة التطبيق (Web) للوصول إلى قاعدة البيانات؟", options: ["استخدام حسابات قاعدة بيانات بصلاحيات محدودة (قراءة فقط عند الحاجة)", "تشفير الاتصال فقط", "إلغاء قاعدة البيانات"], ans: 0 }]
+            },
+            {
+                id: 17, title: "الفصل 17 – خادم الويب", content: `<p><strong>تهيئات ضعيفة:</strong> بيانات اعتماد افتراضية (admin/admin)، محتوى افتراضي خطير (phpinfo.php، أمثلة IIS)، قوائم الدليل (Directory listing) التي تعرض الملفات المخفية.</p>
+        <p><strong>طرق HTTP الخطيرة:</strong> PUT (رفع ملفات)، DELETE (حذف)، TRACE (يمكن استغلاله في هجمات XST مع HttpOnly cookies).</p>
+        <p><strong>ثغرات برمجية تاريخية:</strong> IIS Unicode path traversal (..%c0%af)، Apache chunked encoding، Oracle PL/SQL exclusion list bypass.</p>`, questions: [{ text: "أي من طرق HTTP إذا كانت مفعلة على الخادم تسمح للمهاجم برفع ملف ويب شل (webshell) مباشرة؟", options: ["GET", "POST", "PUT"], ans: 2 }, { text: "ما هي ثغرة IIS Unicode path traversal التي ظهرت عام 2000؟", options: ["استخدام ..%c0%af لتجاوز المرشحات", "حقن SQL في URL", "XSS في رأس"], ans: 0 }]
+            },
+            {
+                id: 18, title: "الفصل 18 – مراجعة الكود المصدري", content: `<p><strong>توقيعات الثغرات الشائعة:</strong> XSS: البحث عن document.write أو innerHtml مع بيانات من request parameter. SQLi: البحث عن "SELECT ... WHERE ... = '" + متغير. Path traversal: البحث عن File أو FileInputStream مع مسار من المستخدم.</p>
+        <p><strong>التركيز على الدوال الخطيرة لكل لغة:</strong> Java (getParameter, createStatement, Runtime.exec)، .NET (Request, SqlCommand, Process.Start)، PHP ($_GET, $_POST, mysql_query, eval, system)، Perl (param, open, system).</p>
+        <p><strong>تعليقات المصدر:</strong> ابحث عن كلمات مثل "TODO: fix security"، "bug"، "overflow"، "backdoor".</p>`, questions: [{ text: "أي من هذه العبارات في كود Java تشير إلى احتمالية وجود SQL Injection؟", options: ["PreparedStatement p = conn.prepareStatement(sql)", "String query = \"SELECT * FROM users WHERE id = \" + userId", "session.setAttribute"], ans: 1 }, { text: "ما هي الدالة في PHP التي قد تسمح بتنفيذ كود ديناميكي من مدخلات المستخدم وتعتبر خطيرة جداً؟", options: ["include()", "eval()", "fopen()"], ans: 1 }]
+            },
+            {
+                id: 19, title: "الفصل 19 – أدوات الهاكر", content: `<p><strong>أدوات أساسية:</strong> Burp Suite (وكيل اعتراض، سبايدر، Intruder، Repeater، Decoder)، Nikto (كشف المحتوى الافتراضي)، Hydra (هجوم القوة الغاشمة على نماذج الدخول).</p>
+        <p><strong>أدوات مساعدة:</strong> Curl/Wget لطلبات HTTP، Netcat لنقل البيانات وإنشاء مستمع، Stunnel لإضافة SSL لأدوات لا تدعمه.</p>
+        <p><strong>ماسحات الثغرات التجارية:</strong> AppScan (IBM) و WebInspect (HP) – تكتشف XSS و SQLi البسيطة لكنها لا تغطي ثغرات المنطق أو التحكم في الوصول المتقدمة.</p>`, questions: [{ text: "أي أداة تعتبر الأكثر شمولاً وتكاملاً لاختبار تطبيقات الويب وفقاً للكتاب؟", options: ["Nikto", "Hydra", "Burp Suite"], ans: 2 }, { text: "ما هي الوظيفة الأساسية لأداة Nikto؟", options: ["اعتراض الطلبات", "تخمين كلمات المرور", "اكتشاف الملفات والدلائل الافتراضية المعروفة"], ans: 2 }]
+            },
+            {
+                id: 20, title: "الفصل 20 – المنهجية الكاملة", content: `<p><strong>الخطوات الـ 12 الرئيسية:</strong></p>
+        <ol><li>رسم خريطة التطبيق (استكشاف الروابط والمحتوى المخفي).</li><li>تحليل التطبيق (نقاط الإدخال، التقنيات، سطح الهجوم).</li><li>اختبار ضوابط جانب العميل (الحقول المخفية، JavaScript، المكونات السميكة).</li><li>اختبار المصادقة (جودة كلمات المرور، القوة الغاشمة، استعادة الحساب).</li><li>اختبار إدارة الجلسات (تخمين الرموز، تسربها، نطاق الكوكيز).</li><li>اختبار التحكم في الوصول (تسلية رأسية وأفقية).</li><li>اختبار المدخلات (Fuzzing جميع المعاملات بحمولات SQLi, XSS, Path traversal).</li><li>اختبار ثغرات خاصة بالوظائف (حقن SMTP, LDAP, XPath).</li><li>اختبار ثغرات المنطق (تغيير التسلسل، حذف معاملات).</li><li>اختبار الاستضافة المشتركة (العزل بين التطبيقات).</li><li>اختبار خادم الويب (المحتوى الافتراضي، طرق HTTP).</li><li>فحوصات متنوعة (DOM-based XSS, Frame injection, الخصوصية المحلية).</li></ol>
+        <p><strong>نصائح عملية:</strong> ترميز الأحرف الخاصة (%26, %3d)، عدم الوثوق بالبيانات من العميل، توثيق كل خطوة.</p>`, questions: [{ text: "كم عدد الخطوات الأساسية في المنهجية التي يقدمها الفصل 20؟", options: ["8", "12", "15"], ans: 1 }, { text: "أي خطوة تسبق اختبار المصادقة مباشرة في المنهجية؟", options: ["اختبار خادم الويب", "اختبار ضوابط جانب العميل", "اختبار ثغرات المنطق"], ans: 1 }]
+            }
+        ];
+
+        let userProgress = JSON.parse(localStorage.getItem('deep_handbook_progress')) || {};
+        let userReviews = JSON.parse(localStorage.getItem('deep_handbook_reviews')) || {};
+        let currentId = 0;
+
+        function updateProgress() {
+            let completed = 0;
+            for (let i = 0; i < chapters.length; i++) {
+                if (userProgress[i] && userProgress[i].passed) completed++;
+            }
+            let percent = Math.round((completed / chapters.length) * 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressPercent').innerText = percent + '%';
+        }
+
+        function renderChapter(id) {
+            const ch = chapters[id];
+            if (!ch) return;
+            currentId = id;
+            const main = document.getElementById('mainContent');
+            let html = `<div class="chapter-title">${ch.title}</div>
+                    <div class="content-box">${ch.content}</div>
+                    <div class="quiz-block"><h3>📝 اختبار متقدم – اختبر فهمك</h3><div id="quizContainer"></div>
+                    <button id="submitBtn">✅ إرسال الإجابات</button>
+                    <div id="quizMsg" style="margin-top:15px;"></div></div>
+                    <div><h3>💬 مراجعات المستخدمين</h3><div id="reviewsList"></div>
+                    <div class="add-review"><input type="text" id="revName" placeholder="اسمك" value="زائر"><textarea id="revText" rows="2" placeholder="أضف مراجعتك أو ملاحظاتك..."></textarea>
+                    <button id="addReviewBtn">➕ أضف مراجعة</button></div></div>
+                    <div class="nav-buttons"><button id="prevBtn" ${id === 0 ? 'disabled' : ''}>⏪ الفصل السابق</button>
+                    <button id="nextBtn" ${id === chapters.length - 1 ? 'disabled' : ''}>الفصل التالي ⏩</button></div>`;
+            main.innerHTML = html;
+
+            // عرض الأسئلة
+            const quizDiv = document.getElementById('quizContainer');
+            ch.questions.forEach((q, idx) => {
+                let qBlock = document.createElement('div');
+                qBlock.className = 'quiz-question';
+                qBlock.innerHTML = `<p><strong>${idx + 1}. ${q.text}</strong></p>` + q.options.map((opt, oi) => `<label class="quiz-option"><input type="radio" name="q${idx}" value="${oi}"> ${opt}</label>`).join('');
+                quizDiv.appendChild(qBlock);
+            });
+
+            // استرجاع الإجابات المحفوظة
+            if (userProgress[id] && userProgress[id].answers) {
+                let saved = userProgress[id].answers;
+                for (let i = 0; i < saved.length; i++) {
+                    let radios = document.getElementsByName(`q${i}`);
+                    if (radios && saved[i] !== undefined && radios[saved[i]]) radios[saved[i]].checked = true;
+                }
+                if (userProgress[id].passed) document.getElementById('quizMsg').innerHTML = '<span style="display:inline-block; background:rgba(57, 211, 83, 0.1); border:1px solid #39d353; color:#39d353; padding:8px 16px; border-radius:6px;">✅ سبق أن اجتزت هذا الاختبار بنجاح.</span>';
+            }
+
+            // المراجعات
+            let reviews = userReviews[id] || [];
+            let revDiv = document.getElementById('reviewsList');
+            revDiv.innerHTML = reviews.length ? reviews.map(r => `<div class="review-item"><strong>${escapeHtml(r.name)}</strong><br>${escapeHtml(r.text)}</div>`).join('') : '<p>لا توجد مراجعات بعد. كن أول من يقيّم هذا الفصل!</p>';
+
+            document.getElementById('submitBtn').onclick = () => submitQuiz(id);
+            document.getElementById('addReviewBtn').onclick = () => addReview(id);
+            document.getElementById('prevBtn').onclick = () => { if (id > 0) renderChapter(id - 1); };
+            document.getElementById('nextBtn').onclick = () => { if (id < chapters.length - 1) renderChapter(id + 1); };
+            updateActiveButton(id);
+        }
+
+        function submitQuiz(id) {
+            const ch = chapters[id];
+            let answers = [], correct = 0;
+            for (let i = 0; i < ch.questions.length; i++) {
+                let radios = document.getElementsByName(`q${i}`);
+                let selected = null;
+                for (let j = 0; j < radios.length; j++) if (radios[j].checked) { selected = j; break; }
+                answers.push(selected);
+                if (selected !== null && selected === ch.questions[i].ans) correct++;
+            }
+            if (answers.includes(null)) {
+                document.getElementById('quizMsg').innerHTML = '<span style="display:inline-block; background:rgba(248, 81, 73, 0.1); border:1px solid #f85149; color:#f85149; padding:8px 16px; border-radius:6px;">⚠️ لم تُجب على جميع الأسئلة. أجب أولاً.</span>';
+                return;
+            }
+            let passed = (correct === ch.questions.length);
+            if (!userProgress[id]) userProgress[id] = {};
+            userProgress[id].answers = answers;
+            userProgress[id].passed = passed;
+            localStorage.setItem('deep_handbook_progress', JSON.stringify(userProgress));
+            updateProgress();
+            let msg = passed ? '🎉 ممتاز! جميع الإجابات صحيحة. تم تحديث تقدمك.' : `❌ أجبت على ${correct} من ${ch.questions.length} إجابة صحيحة. حاول مرة أخرى.`;
+            document.getElementById('quizMsg').innerHTML = `<span style="display:inline-block; background:${passed ? 'rgba(57, 211, 83, 0.1)' : 'rgba(248, 81, 73, 0.1)'}; border:1px solid ${passed ? '#39d353' : '#f85149'}; color:${passed ? '#39d353' : '#f85149'}; padding:8px 16px; border-radius:6px;">${msg}</span>`;
+            if (passed) renderChapter(id);
+        }
+
+        function addReview(id) {
+            let name = document.getElementById('revName').value.trim();
+            let text = document.getElementById('revText').value.trim();
+            if (!name || !text) { alert("الرجاء إدخال الاسم والمراجعة"); return; }
+            if (!userReviews[id]) userReviews[id] = [];
+            userReviews[id].push({ name, text });
+            localStorage.setItem('deep_handbook_reviews', JSON.stringify(userReviews));
+            renderChapter(id);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function buildSidebar() {
+            const list = document.getElementById('chapterList');
+            list.innerHTML = '';
+            chapters.forEach(ch => {
+                let li = document.createElement('li');
+                let btn = document.createElement('button');
+                btn.textContent = ch.title;
+                btn.classList.add('chapter-btn');
+                btn.dataset.id = ch.id;
+                btn.onclick = () => renderChapter(ch.id);
+                li.appendChild(btn);
+                list.appendChild(li);
+            });
+        }
+
+        function updateActiveButton(id) {
+            document.querySelectorAll('.chapter-btn').forEach(btn => {
+                if (parseInt(btn.dataset.id) === id) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        buildSidebar();
+        updateProgress();
+        renderChapter(0);
+    </script>
+</body>
+
+</html>
