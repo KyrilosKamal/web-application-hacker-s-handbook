@@ -1,571 +1,1923 @@
 <!DOCTYPE html>
-<html lang="ar">
-
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <title>الشرح الكامل والمتعمق – The Web Application Hacker's Handbook</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Application Hacker's Handbook - Interactive Tutorial</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Consolas', 'Courier New', monospace;
-            background: #0d1117;
-            color: #c9d1d9;
-            line-height: 1.7;
-            direction: rtl;
-            padding: 20px;
-        }
+    :root {
+      --primary-dark: #0a0e27;
+      --secondary-dark: #1a1f3a;
+      --tertiary-dark: #2d3561;
+      --accent-green: #00ff41;
+      --accent-red: #ff0055;
+      --accent-blue: #00d4ff;
+      --accent-orange: #ff6b35;
+      --text-primary: #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --border-color: #00ff41;
+      --success: #00ff41;
+      --error: #ff0055;
+      --warning: #ff6b35;
+    }
 
-        .app {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-        }
+    html[dir="rtl"] {
+      direction: rtl;
+    }
 
-        /* sidebar */
-        .sidebar {
-            flex: 1.2;
-            min-width: 270px;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 22px;
-            box-shadow: 0 0 15px rgba(46, 160, 67, 0.1);
-            height: fit-content;
-            position: sticky;
-            top: 20px;
-        }
+    body {
+      font-family: 'Courier New', 'Courier', monospace;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-        .sidebar h2 {
-            font-size: 1.6rem;
-            color: #39d353;
-            border-right: 4px solid #39d353;
-            padding-right: 14px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 8px rgba(57, 211, 83, 0.4);
-        }
+    /* ===== HEADER & NAVIGATION ===== */
+    header {
+      background: var(--secondary-dark);
+      border-bottom: 2px solid var(--accent-green);
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    }
 
-        .chapter-list {
-            list-style: none;
-            max-height: 65vh;
-            overflow-y: auto;
-        }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
-        .chapter-list li {
-            margin: 8px 0;
-        }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent-green);
+      text-shadow: 0 0 10px var(--accent-green);
+    }
 
-        .chapter-btn {
-            background: none;
-            border: 1px solid transparent;
-            width: 100%;
-            text-align: right;
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            color: #c9d1d9;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: inherit;
-        }
+    .header-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-        .chapter-btn.active {
-            background: rgba(57, 211, 83, 0.1);
-            color: #39d353;
-            border: 1px solid #39d353;
-            box-shadow: inset 0 0 10px rgba(57, 211, 83, 0.2);
-        }
+    .control-btn {
+      background: var(--secondary-dark);
+      color: var(--accent-green);
+      border: 2px solid var(--accent-green);
+      padding: 8px 15px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
 
-        .chapter-btn:hover:not(.active) {
-            background: #21262d;
-            border: 1px solid #30363d;
-        }
+    .control-btn:hover {
+      background: var(--accent-green);
+      color: var(--primary-dark);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+    }
 
-        .progress-area {
-            margin-top: 30px;
-            background: #0d1117;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-        }
+    .control-btn.active {
+      background: var(--accent-green);
+      color: var(--primary-dark);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+    }
 
-        .progress-bar {
-            background: #21262d;
-            height: 12px;
-            border-radius: 6px;
-            margin: 10px 0;
-            overflow: hidden;
-            border: 1px solid #30363d;
-        }
+    /* Search Bar */
+    .search-container {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+    }
 
-        .progress-fill {
-            background: #39d353;
-            width: 0%;
-            height: 100%;
-            transition: width 0.4s ease-out;
-            box-shadow: 0 0 10px #39d353;
-        }
+    .search-container input {
+      width: 100%;
+      padding: 10px;
+      background: var(--tertiary-dark);
+      border: 2px solid var(--accent-green);
+      color: var(--text-primary);
+      font-family: inherit;
+      border-radius: 4px;
+      font-size: 12px;
+    }
 
-        /* main */
-        .main-content {
-            flex: 3;
-            min-width: 340px;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 30px 35px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
+    .search-container input::placeholder {
+      color: var(--text-secondary);
+    }
 
-        .chapter-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #39d353;
-            border-right: 5px solid #39d353;
-            padding-right: 18px;
-            margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(57, 211, 83, 0.3);
-        }
+    /* Nav Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--accent-green);
+      padding-top: 15px;
+    }
 
-        .content-box {
-            max-height: 550px;
-            overflow-y: auto;
-            padding: 15px;
-            margin-bottom: 30px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #8b949e;
-        }
+    .nav-tab {
+      padding: 10px 20px;
+      background: var(--tertiary-dark);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
 
-        .content-box strong {
-            color: #c9d1d9;
-        }
+    .nav-tab:hover {
+      background: var(--accent-green);
+      color: var(--primary-dark);
+    }
 
-        .content-box p,
-        .content-box ul,
-        .content-box pre {
-            margin-bottom: 1rem;
-        }
+    .nav-tab.active {
+      background: var(--accent-green);
+      color: var(--primary-dark);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+    }
 
-        .quiz-block {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-            border-right: 4px solid #58a6ff;
-        }
-        
-        .quiz-block h3 {
-            color: #58a6ff;
-            margin-bottom: 15px;
-        }
+    /* ===== MAIN CONTAINER ===== */
+    .container {
+      display: flex;
+      min-height: calc(100vh - 200px);
+    }
 
-        .quiz-question {
-            background: #161b22;
-            padding: 18px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #30363d;
-        }
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--secondary-dark);
+      border-right: 2px solid var(--accent-green);
+      overflow-y: auto;
+      padding: 20px;
+    }
 
-        .quiz-question p {
-            color: #c9d1d9;
-            font-weight: bold;
-            margin-bottom: 12px;
-            font-size: 1.05rem;
-        }
+    .sidebar-title {
+      color: var(--accent-green);
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--accent-green);
+      padding-bottom: 10px;
+    }
 
-        .quiz-option {
-            display: block;
-            margin: 10px 0;
-            padding: 8px 12px;
-            border-radius: 6px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .quiz-option:hover {
-            border-color: #58a6ff;
-            background: rgba(88, 166, 255, 0.1);
-        }
+    .chapter-list {
+      list-style: none;
+    }
 
-        button {
-            background: #21262d;
-            color: #39d353;
-            border: 1px solid #30363d;
-            padding: 10px 24px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: inherit;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    .chapter-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      background: var(--tertiary-dark);
+      border-left: 3px solid var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+      border-radius: 4px;
+    }
 
-        button:hover {
-            background: rgba(57, 211, 83, 0.1);
-            border-color: #39d353;
-            box-shadow: 0 0 10px rgba(57, 211, 83, 0.4);
-            transform: translateY(-2px);
-        }
+    .chapter-item:hover {
+      background: var(--accent-green);
+      color: var(--primary-dark);
+      border-left-color: var(--accent-green);
+    }
 
-        .review-item {
-            background: #0d1117;
-            padding: 15px;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-right: 3px solid #bc8cff;
-        }
+    .chapter-item.active {
+      background: var(--accent-green);
+      color: var(--primary-dark);
+      border-left-color: var(--accent-red);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.6);
+    }
 
-        .add-review {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-            background: #161b22;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px dashed #30363d;
-        }
+    .chapter-item.completed::after {
+      content: ' ✓';
+      color: var(--success);
+    }
 
-        .add-review input,
-        .add-review textarea {
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #39d353;
-            font-family: inherit;
-        }
-        
-        .add-review input:focus,
-        .add-review textarea:focus {
-            outline: none;
-            border-color: #bc8cff;
-            box-shadow: 0 0 8px rgba(188, 140, 255, 0.3);
-        }
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
 
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 35px;
-            padding-top: 20px;
-            border-top: 1px solid #30363d;
-        }
+    /* Views */
+    .view {
+      display: none;
+    }
 
-        /* Scrollbar customization */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0d1117; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #30363d; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #39d353; 
-        }
+    .view.active {
+      display: block;
+    }
 
-        @media (max-width: 850px) {
-            .app {
-                flex-direction: column;
-            }
+    /* ===== TUTORIAL VIEW ===== */
+    .chapter-header {
+      border-bottom: 2px solid var(--accent-green);
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
 
-            .sidebar {
-                position: static;
-            }
-        }
-    </style>
+    .chapter-title {
+      font-size: 28px;
+      color: var(--accent-green);
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px var(--accent-green);
+    }
+
+    .chapter-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .chapter-content {
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .chapter-content h3 {
+      color: var(--accent-blue);
+      margin-top: 25px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .chapter-content p {
+      margin-bottom: 15px;
+    }
+
+    .chapter-content ul, .chapter-content ol {
+      margin-left: 30px;
+      margin-bottom: 15px;
+    }
+
+    .chapter-content li {
+      margin-bottom: 8px;
+    }
+
+    .code-block {
+      background: var(--tertiary-dark);
+      border-left: 3px solid var(--accent-orange);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+      color: var(--accent-orange);
+    }
+
+    .key-point {
+      background: rgba(0, 255, 65, 0.1);
+      border-left: 3px solid var(--accent-green);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      color: var(--accent-green);
+    }
+
+    .warning-box {
+      background: rgba(255, 107, 53, 0.1);
+      border-left: 3px solid var(--accent-orange);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      color: var(--accent-orange);
+    }
+
+    /* ===== DASHBOARD VIEW ===== */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+      background: var(--tertiary-dark);
+      border: 2px solid var(--accent-green);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+    }
+
+    .card-title {
+      color: var(--accent-green);
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 32px;
+      color: var(--accent-blue);
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: var(--secondary-dark);
+      border: 1px solid var(--accent-green);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    /* ===== QUIZ VIEW ===== */
+    .quiz-container {
+      background: var(--tertiary-dark);
+      border: 2px solid var(--accent-blue);
+      padding: 30px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-header {
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--accent-blue);
+      padding-bottom: 15px;
+    }
+
+    .quiz-title {
+      color: var(--accent-blue);
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .quiz-progress {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .question-block {
+      margin-bottom: 25px;
+    }
+
+    .question-text {
+      color: var(--accent-green);
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .answer-option {
+      background: var(--secondary-dark);
+      border: 2px solid var(--text-secondary);
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .answer-option:hover {
+      border-color: var(--accent-blue);
+      background: var(--tertiary-dark);
+    }
+
+    .answer-option input[type="radio"] {
+      cursor: pointer;
+    }
+
+    .answer-option.correct {
+      border-color: var(--success);
+      background: rgba(0, 255, 65, 0.2);
+    }
+
+    .answer-option.incorrect {
+      border-color: var(--error);
+      background: rgba(255, 0, 85, 0.2);
+    }
+
+    .quiz-btn {
+      background: var(--accent-blue);
+      color: var(--primary-dark);
+      border: none;
+      padding: 12px 30px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-right: 10px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .quiz-btn:hover {
+      background: var(--accent-green);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+    }
+
+    .quiz-feedback {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .feedback-correct {
+      background: rgba(0, 255, 65, 0.2);
+      border-left: 3px solid var(--success);
+      color: var(--success);
+    }
+
+    .feedback-incorrect {
+      background: rgba(255, 0, 85, 0.2);
+      border-left: 3px solid var(--error);
+      color: var(--error);
+    }
+
+    /* ===== NOTES VIEW ===== */
+    .notes-container {
+      background: var(--tertiary-dark);
+      border: 2px solid var(--accent-orange);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .note-form {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--accent-orange);
+    }
+
+    .note-form textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      background: var(--secondary-dark);
+      border: 2px solid var(--accent-orange);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12px;
+      border-radius: 4px;
+      resize: vertical;
+    }
+
+    .note-form button {
+      background: var(--accent-orange);
+      color: var(--primary-dark);
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .note-form button:hover {
+      box-shadow: 0 0 15px rgba(255, 107, 53, 0.6);
+    }
+
+    .note-item {
+      background: var(--secondary-dark);
+      border-left: 3px solid var(--accent-orange);
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    .note-text {
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .note-time {
+      color: var(--text-secondary);
+      font-size: 11px;
+    }
+
+    .note-delete {
+      background: var(--error);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 11px;
+      border-radius: 3px;
+      margin-top: 10px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--secondary-dark);
+      border-top: 2px solid var(--accent-green);
+      padding: 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid var(--accent-green);
+        max-height: 200px;
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+
+      .chapter-list {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .chapter-item {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-top {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-container {
+        max-width: none;
+      }
+
+      .chapter-title {
+        font-size: 20px;
+      }
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--tertiary-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-green);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-blue);
+    }
+  </style>
 </head>
-
 <body>
-    <div class="app">
-        <aside class="sidebar">
-            <h2>📚 فصول الكتاب</h2>
-            <ul class="chapter-list" id="chapterList"></ul>
-            <div class="progress-area">
-                <strong>📊 الإنجاز الإجمالي</strong>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
+  <div id="app">
+    <!-- HEADER -->
+    <header>
+      <div class="header-top">
+        <div class="logo">
+          ⚔️ Web Hacker's Handbook
+        </div>
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search chapters...">
+        </div>
+        <div class="header-controls">
+          <button class="control-btn" id="langToggle" title="Toggle Language">
+            EN / العربية
+          </button>
+          <button class="control-btn" id="clearDataBtn" title="Clear all saved data">
+            Clear Data
+          </button>
+        </div>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-view="tutorial">📖 Tutorial</button>
+        <button class="nav-tab" data-view="quiz">🎯 Quiz</button>
+        <button class="nav-tab" data-view="dashboard">📊 Dashboard</button>
+        <button class="nav-tab" data-view="notes">📝 Notes</button>
+        <button class="nav-tab" data-view="about">ℹ️ About</button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-title" id="chapterListTitle">Chapters</div>
+        <ul class="chapter-list" id="chapterList"></ul>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- TUTORIAL VIEW -->
+        <div id="tutorial" class="view active">
+          <div class="chapter-header">
+            <h1 class="chapter-title" id="chapterTitle">Welcome</h1>
+            <p class="chapter-subtitle" id="chapterSubtitle">Select a chapter to begin learning</p>
+          </div>
+          <div class="chapter-content" id="chapterContent"></div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard" class="view">
+          <h2 class="chapter-title" style="margin-bottom: 30px;">📊 Your Progress</h2>
+          <div class="dashboard-grid">
+            <div class="dashboard-card">
+              <div class="card-title">Chapters Completed</div>
+              <div class="card-value" id="completedChapters">0</div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">
+                  <span id="progressText">0%</span>
                 </div>
-                <div id="progressPercent">0%</div>
+              </div>
             </div>
-        </aside>
-        <main class="main-content" id="mainContent"></main>
+            <div class="dashboard-card">
+              <div class="card-title">Quiz Average</div>
+              <div class="card-value" id="quizAverage">--</div>
+              <p style="color: var(--text-secondary); font-size: 12px;">Based on completed quizzes</p>
+            </div>
+            <div class="dashboard-card">
+              <div class="card-title">Total Notes</div>
+              <div class="card-value" id="totalNotes">0</div>
+              <p style="color: var(--text-secondary); font-size: 12px;">Personal annotations</p>
+            </div>
+            <div class="dashboard-card">
+              <div class="card-title">Study Streak</div>
+              <div class="card-value" id="studyStreak">🔥 0</div>
+              <p style="color: var(--text-secondary); font-size: 12px;">Days visited</p>
+            </div>
+          </div>
+          <h3 class="chapter-title" style="margin-top: 40px; margin-bottom: 20px;">Recent Activity</h3>
+          <div id="recentActivity" style="color: var(--text-secondary);"></div>
+        </div>
+
+        <!-- QUIZ VIEW -->
+        <div id="quiz" class="view">
+          <h2 class="chapter-title" style="margin-bottom: 30px;">🎯 Chapter Quiz</h2>
+          <div id="quizContainer"></div>
+        </div>
+
+        <!-- NOTES VIEW -->
+        <div id="notes" class="view">
+          <h2 class="chapter-title" style="margin-bottom: 30px;">📝 My Notes</h2>
+          <div class="notes-container">
+            <div class="note-form">
+              <textarea id="noteInput" placeholder="Add a new note for the current chapter..."></textarea>
+              <button id="addNoteBtn">Add Note</button>
+            </div>
+          </div>
+          <div id="notesList"></div>
+        </div>
+
+        <!-- ABOUT VIEW -->
+        <div id="about" class="view">
+          <div class="chapter-header">
+            <h1 class="chapter-title">About This Tutorial</h1>
+          </div>
+          <div class="chapter-content">
+            <h3>🛡️ Web Application Hacker's Handbook - Interactive Edition</h3>
+            <p>This is an interactive, comprehensive tutorial based on "The Web Application Hacker's Handbook" - a definitive guide to web application security.</p>
+            
+            <h3>📚 What You'll Learn</h3>
+            <ul>
+              <li>Web application vulnerabilities and attack vectors</li>
+              <li>SQL Injection, XSS, CSRF, and authentication flaws</li>
+              <li>Session management and security best practices</li>
+              <li>Defense mechanisms and mitigation strategies</li>
+              <li>Real-world exploitation techniques and case studies</li>
+            </ul>
+
+            <h3>💾 Your Data</h3>
+            <p>All your progress, notes, and quiz scores are saved locally in your browser using <code>localStorage</code>. No data is sent to any server.</p>
+            <ul>
+              <li><strong>Progress data:</strong> <code>whh_progress</code></li>
+              <li><strong>Notes:</strong> <code>whh_notes</code></li>
+              <li><strong>Settings:</strong> <code>whh_settings</code></li>
+            </ul>
+
+            <h3>⚠️ Disclaimer</h3>
+            <p class="warning-box">This educational material is for learning and ethical hacking purposes only. Do not use these techniques against any systems without explicit authorization. Unauthorized access to computer systems is illegal.</p>
+
+            <h3>🌐 Features</h3>
+            <ul>
+              <li>✅ 20 comprehensive chapters</li>
+              <li>✅ Interactive quizzes (40+ questions)</li>
+              <li>✅ Progress tracking and dashboards</li>
+              <li>✅ Personal notes and annotations</li>
+              <li>✅ Bilingual content (English & Arabic)</li>
+              <li>✅ Works completely offline</li>
+              <li>✅ No external dependencies</li>
+            </ul>
+
+            <h3>🎯 How to Use</h3>
+            <ol>
+              <li>Select a chapter from the sidebar</li>
+              <li>Read the tutorial content</li>
+              <li>Take the quiz to test your knowledge</li>
+              <li>Add notes for important concepts</li>
+              <li>Track your progress on the dashboard</li>
+            </ol>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <script>
-        // ============================================================
-        // بيانات الكتاب الكاملة – شرح مفصل لكل فصل + أسئلة متقدمة
-        // ============================================================
-        const chapters = [
-            {
-                id: 0, title: "📖 المقدمة", content: `<p><strong>عن الكتاب:</strong> "The Web Application Hacker's Handbook" من تأليف Dafydd Stuttard و Marcus Pinto هو المرجع الأهم في مجال اختبار اختراق تطبيقات الويب. يُغطي الكتاب 20 فصلاً تغطي الجوانب العملية والنظرية لاكتشاف واستغلال الثغرات الأمنية.</p>
-        <p><strong>منهجية الكتاب:</strong> يعتمد على المزج بين الاستكشاف اليدوي والأتمتة الذكية، مع أمثلة حقيقية من آلاف التطبيقات التي اختبرها المؤلفان. يشمل: رسم خرائط التطبيق، تجاوز ضوابط العميل، مهاجمة المصادقة والجلسات، التحكم بالوصول، حقن الكود (SQL، أوامر، XPath، LDAP، SMTP)، ثغرات المسار، منطق التطبيق، مهاجمة المستخدمين (XSS، CSRF، تثبيت الجلسة)، الأتمتة، تسرب المعلومات، التطبيقات المجمعة، بنية التطبيق، خادم الويب، مراجعة الكود المصدري، الأدوات والمنهجية.</p>`, questions: [{ text: "أي من الآتي يمثل المشكلة الجذرية التي يواجهها كل تطبيق ويب حسب الفصل الأول؟", options: ["ضعف جدران الحماية", "إمكانية إرسال المستخدم مدخلات عشوائية غير موثوقة", "عدم استخدام SSL"], ans: 1 }, { text: "ما هي أكثر ثغرة انتشاراً وفق إحصائيات المؤلفين على 100+ تطبيق؟", options: ["SQL Injection", "Cross‑Site Scripting (XSS)", "Broken Access Control"], ans: 1 }]
-            },
-            {
-                id: 1, title: "الفصل 1 – عدم أمان تطبيقات الويب", content: `<p><strong>المشكلة الأساسية:</strong> أي تطبيق ويب يستقبل مدخلات من المستخدم، وهذه المدخلات يمكن أن تكون خبيثة بالكامل. لا يمكن الوثوق بأي شيء يصل من العميل.</p>
-        <p><strong>إحصائيات خطيرة (أكثر من 100 تطبيق):</strong></p>
-        <ul><li>XSS (Cross‑Site Scripting): 91%</li><li>كسر التحكم في الوصول: 78%</li><li>ثغرات المصادقة: 67%</li><li>حقن SQL: 36%</li><li>تسرب المعلومات: 81%</li></ul>
-        <p><strong>عوامل تفاقم المشكلة:</strong> التطوير الداخلي (كل تطبيق فريد)، البساطة الخادعة (سهولة الكتابة، صعوبة التأمين)، قيود الوقت والموارد، تطور التهديدات السريع، وتقنيات ممتدة (مثل AJAX).</p>
-        <p><strong>الجدار الأمني الجديد:</strong> لم تعد جدران الحماية كافية. التطبيق نفسه هو خط الدفاع الأول. ثغرة واحدة في سطر من الكود قد تسمح باختراق الخادم بالكامل.</p>`, questions: [{ text: "ما هو السبب الذي يجعل SSL/HTTPS وحده غير كافٍ لحماية تطبيق ويب؟", options: ["لأن SSL لا يمنع هجمات XSS أو SQL Injection", "لأن SSL يُشفر البيانات فقط أثناء النقل", "كل ما سبق صحيح"], ans: 2 }, { text: "أي من العوامل التالية تجعل تطبيقات الويب أكثر عرضة للثغرات مقارنة بالبرامج التقليدية؟", options: ["الاعتماد على التطوير الداخلي وغياب التقييس", "قلة الوعي الأمني لدى المطورين", "كل ما سبق"], ans: 2 }]
-            },
-            {
-                id: 2, title: "الفصل 2 – آليات الدفاع الأساسية", content: `<p><strong>ثلاث آليات رئيسية للتحكم في وصول المستخدم:</strong> المصادقة (إثبات الهوية)، إدارة الجلسات (ربط الطلبات)، والتحكم في الوصول (الصلاحيات).</p>
-        <p><strong>معالجة المدخلات:</strong> الطرق الأربع الأساسية: القائمة السوداء (Blacklist – غير فعالة)، القائمة البيضاء (Whitelist – الأفضل)، التنقية (Sanitization)، والتحقق الدلالي (Semantic).</p>
-        <p><strong>التحقق عبر الحدود (Boundary Validation):</strong> كل مكون يعامل مدخلاته كبيانات خبيثة محتملة، ويقوم بتنقيتها قبل الاستخدام. هذا يمنع هجمات الدرجة الثانية (Second‑order).</p>
-        <p><strong>التعامل مع المهاجم:</strong> إخفاء رسائل التصحيح، تسجيل الأحداث، تنبيه المسؤولين، وإنهاء الجلسة أو إبطاء الاستجابة عند كشف الأنشطة المشبوهة.</p>`, questions: [{ text: "أي من طرق معالجة المدخلات تعتبر الأكثر أماناً في التصميم الدفاعي؟", options: ["Blacklist (قائمة الحظر)", "Whitelist (القائمة البيضاء)", "التنقية العشوائية"], ans: 1 }, { text: "ما المقصود بـ 'التحقق عبر الحدود' (Boundary Validation)؟", options: ["التحقق فقط عند مدخل الشبكة", "التحقق عند كل طبقة وكل مكون يستهلك البيانات", "التحقق فقط في قاعدة البيانات"], ans: 1 }]
-            },
-            {
-                id: 3, title: "الفصل 3 – تقنيات تطبيقات الويب", content: `<p><strong>بروتوكول HTTP:</strong> طلبات (GET, POST, HEAD, TRACE, OPTIONS, PUT) وردود (200 نجاح، 302 إعادة توجيه، 401 غير مصرح، 403 ممنوع، 404 غير موجود، 500 خطأ خادم).</p>
-        <p><strong>رؤوس مهمة:</strong> Host (للاستضافة الافتراضية)، Cookie (نقل حالة العميل)، Referer (مصدر الطلب – يمكن تزويره بسهولة)، User-Agent.</p>
-        <p><strong>التشفيرات الأساسية:</strong> URL Encoding (%20 للمسافة، %3d لـ =)، HTML Encoding (&lt; لـ <)، Base64 (نقل بيانات ثنائية)، وUnicode (يمكن استغلالها لتجاوز المرشحات).</p>
-        <p><strong>HTTPS:</strong> يؤمن النقل فقط، لكنه لا يمنع هجمات مثل XSS أو حقن SQL أو ثغرات المنطق.</p>`, questions: [{ text: "أي من رؤوس HTTP يمكن للمستخدم تزويره بسهولة باستخدام وكيل اعتراض؟", options: ["Cookie", "Referer", "جميع ما سبق"], ans: 2 }, { text: "لماذا لا يمنع HTTPS ثغرات تطبيق الويب مثل SQL Injection؟", options: ["لأن HTTPS يُشفر فقط القناة بين المتصفح والخادم، ولا يتحقق من صحة المدخلات", "لأن HTTPS أبطأ من HTTP", "لأن HTTPS لا يدعم التشفير"], ans: 0 }]
-            },
-            {
-                id: 4, title: "الفصل 4 – رسم خريطة التطبيق", content: `<p><strong>الزحف اليدوي والآلي:</strong> استخدام Burp Suite أو WebScarab لاستكشاف الروابط والنماذج. التقاط حركة المرور وتحليلها.</p>
-        <p><strong>اكتشاف المحتوى المخفي:</strong> تقنيات القوة الغاشمة للدليل والملفات (مثل admin.php, backup.zip). استخدام قوائم كلمات شائعة (كلمات من Nikto).</p>
-        <p><strong>الاستدلال من المحتوى:</strong> إذا وجدت AddDocument.jsp و ViewDocument.jsp، توقع وجود EditDocument.jsp و DeleteDocument.jsp.</p>
-        <p><strong>استخدام محركات البحث:</strong> site:target.com login، link:target.com، واستخدام أرشيف الإنترنت (Wayback Machine) لاسترجاع صفحات قديمة لم تُحذف من الخادم.</p>`, questions: [{ text: "أي من التقنيات التالية لا تعتمد على إرسال عدد كبير من الطلبات التخمينية؟", options: ["القوة الغاشمة للدليل", "الاستدلال من أنماط أسماء الملفات الموجودة", "فحص robots.txt"], ans: 1 }, { text: "ما فائدة استخدام 'Wayback Machine' في رسم خريطة التطبيق؟", options: ["لا فائدة", "اكتشاف محتوى قديم ما زال موجوداً على الخادم ولم يعد مرتبطاً", "تسريع الزحف"], ans: 1 }]
-            },
-            {
-                id: 5, title: "الفصل 5 – تجاوز ضوابط جانب العميل", content: `<p><strong>نقل البيانات عبر العميل:</strong> الحقول المخفية، الكوكيز، معاملات URL، وحتى رأس Referer يمكن تعديلها باستخدام وكيل اعتراض مثل Burp Proxy.</p>
-        <p><strong>تجاوز maxlength و JavaScript:</strong> إما اعتراض الطلب قبل الإرسال، أو تعطيل JavaScript، أو تعديل دالة التحقق في الاستجابة.</p>
-        <p><strong>المكونات السميكة:</strong> Java Applets (فك الترجمة باستخدام Jad أو Jode)، ActiveX Controls (هندسة عكسية باستخدام OllyDbg أو COMRaider)، وFlash (Flasm و Flare).</p>
-        <p><strong>ASP.NET ViewState:</strong> إذا لم يكن EnableViewStateMac مفعلاً، يمكن فك Base64 وتعديل البيانات وإعادة ترميزها. إذا كان مفعلاً، لا يمكن التعديل لكن قد يحتوي على معلومات حساسة تستحق القراءة.</p>`, questions: [{ text: "كيف يمكن تجاوز حقل مخفي يحتوي على سعر المنتج؟", options: ["لا يمكن تجاوزه", "استخدام وكيل اعتراض لتعديل القيمة قبل إرسال الطلب", "إضافة input جديد في HTML"], ans: 1 }, { text: "لماذا لا يُعتبر التحقق من جانب العميل (مثل JavaScript) كافياً لأمن التطبيق؟", options: ["لأن المستخدم يمكنه تعطيل JavaScript أو تعديل الطلب", "لأنه يبطئ التطبيق", "لأنه صعب البرمجة"], ans: 0 }]
-            },
-            {
-                id: 6, title: "الفصل 6 – مهاجمة المصادقة", content: `<p><strong>ثغرات التصميم الشائعة:</strong> كلمات مرور ضعيفة (password, admin)، عدم قفل الحساب بعد محاولات خاطئة (قوة غاشمة)، رسائل خطأ مفصلة تكشف وجود اسم المستخدم.</p>
-        <p><strong>ثغرات وظائف الدعم:</strong> تغيير كلمة المرور (يمكن إرسال طلب بدون المعامل القديم)، استعادة كلمة المرور (أسئلة ضعيفة أو رابط يمكن تخمينه)، 'تذكرني' (كوكي ثابت يمكن تزويره).</p>
-        <p><strong>ثغرات التنفيذ:</strong> Fail‑open login (عند حدوث استثناء يعتبر الدخول ناجحاً)، عيوب الدخول متعدد المراحل (تخطي مرحلة، تعديل بيانات بين المراحل).</p>
-        <p><strong>الدفاعات الفعالة:</strong> استخدام salted hash لكلمات المرور، قفل مؤقت للحساب (مثلاً 30 دقيقة بعد 3 محاولات)، إشعار المستخدم بآخر دخول وعدد المحاولات الفاشلة.</p>`, questions: [{ text: "أي من التالي يعتبر ثغرة تصميم خطيرة في المصادقة؟", options: ["استخدام HTTPS", "رسالة خطأ عامة 'فشل الدخول'", "رسالة تفصيلية 'اسم المستخدم غير موجود' مع إظهار الحقل"], ans: 2 }, { text: "ما هو 'Fail‑open login' وكيف يحدث؟", options: ["عندما يحدث استثناء في كود المصادقة ويعتبر الدخول ناجحاً", "عندما لا يتحقق الخادم من كلمة المرور", "عندما يكون قفل الحساب مفعلاً"], ans: 0 }]
-            },
-            {
-                id: 7, title: "الفصل 7 – مهاجمة إدارة الجلسات", content: `<p><strong>ثغرات توليد الرموز:</strong> رموز ذات معنى (user=daf;admin=false)، قابلة للتخمين (تسلسل رقمي 1000,1001,1002)، اعتماد على الوقت، أو مولد عشوائي ضعيف (java.util.Random يمكن توقعه من ناتج واحد).</p>
-        <p><strong>ثغرات التعامل مع الرموز:</strong> إرسال الرمز عبر HTTP (يُمكن اعتراضه)، ظهور الرمز في URL (يُسجل في سجلات الخادم والمتصفح وReferer)، عدم إنهاء الجلسة بعد الخروج، نطاق كوكي واسع (domain=.bank.com يسمح بتطبيقات أخرى بقراءة الكوكي).</p>
-        <p><strong>الدفاع المتقدم:</strong> رموز غير قابلة للتخمين (32+ بايت من مصدر عشوائي قوي)، secure flag، per‑page tokens (رموز ديناميكية لكل صفحة تمنع CSRF وتثبيت الجلسة).</p>`, questions: [{ text: "أي من الطرق التالية تمنع بشكل فعال هجوم تثبيت الجلسة (Session Fixation)؟", options: ["استخدام HTTPS فقط", "إصدار رمز جلسة جديد بعد نجاح المصادقة", "استخدام كوكيز بدون HttpOnly"], ans: 1 }, { text: "لماذا يعتبر ظهور رمز الجلسة في URL ثغرة أمنية؟", options: ["لأنه يجعل الرمز أطول", "لأنه قد يظهر في سجلات الخادم وفي رأس Referer عند زيارة روابط خارجية", "لأنه يبطئ التطبيق"], ans: 1 }]
-            },
-            {
-                id: 8, title: "الفصل 8 – مهاجمة التحكم في الوصول", content: `<p><strong>تسلية رأسية (Vertical):</strong> وصول مستخدم عادي إلى وظائف مدير (مثل /admin/panel.jsp).</p>
-        <p><strong>تسلية أفقية (Horizontal):</strong> وصول مستخدم إلى بيانات مستخدم آخر (مثل تغيير docid=123 إلى docid=124).</p>
-        <p><strong>أمثلة شائعة للثغرات:</strong> وظائف غير محمية بالكامل (تعتمد فقط على إخفاء URL)، تخطي مراحل في العمليات متعددة الخطوات، ملفات ثابتة (PDF) يمكن الوصول إليها مباشرة.</p>
-        <p><strong>اختبار فعال:</strong> استخدام عدة حسابات (مستخدم عادي ومدير) ومحاولة الوصول لكل مسار. في حالة وجود حساب واحد فقط، استخدام تقنيات تخمين المعرفات (الأرقام المتسلسلة، التواريخ).</p>`, questions: [{ text: "ما الفرق بين التسلية الرأسية (Vertical) والأفقية (Horizontal)؟", options: ["الرأسية تغير الدور (user→admin)، الأفقية تصل لبيانات مستخدم آخر بنفس الدور", "الرأسية تستخدم SQL injection", "لا فرق"], ans: 0 }, { text: "أي من العبارات التالية توضح لماذا الاعتماد على 'إخفاء المسار' (security by obscurity) غير آمن؟", options: ["لأن المسارات تظهر في شريط العنوان وسجل المتصفح ويمكن توقعها", "لأن جدران الحماية تمنعها", "لأنها تبطئ التطبيق"], ans: 0 }]
-            },
-            {
-                id: 9, title: "الفصل 9 – حقن الكود", content: `<p><strong>حقن SQL الكلاسيكي:</strong> إدخال ' لاختبار الخطأ، ثم ' or 1=1-- لتجاوز الدخول. استخدام UNION لاستخراج البيانات: تحديد عدد الأعمدة بـ NULL ثم تحديد عمود نصي لاستخراج أسماء الجداول والأعمدة ثم البيانات.</p>
-        <p><strong>SQL أعمى (Blind):</strong> استخدام استدلال بتغيير السلوك (مثل AND 1=1 يعيد نتائج و AND 1=2 لا يعيد) أو تأخير زمني (waitfor delay '0:0:5' في MS-SQL).</p>
-        <p><strong>حقن أوامر النظام:</strong> ; cat /etc/passwd, | dir, & whoami &، واستخدام $IFS بديلاً عن المسافات في Unix.</p>
-        <p><strong>حقن XPath, LDAP, SMTP:</strong> إضافة شروط جديدة، تعديل فلتر البحث، أو إضافة رؤوس بريد إلكتروني (Cc, Bcc).</p>`, questions: [{ text: "في حالة عدم ظهور أي رسالة خطأ أو نتائج استعلام، كيف يمكن تأكيد وجود Blind SQL Injection في MS-SQL؟", options: ["بإرسال ' OR '1'='1", "بإرسال '; waitfor delay '0:0:10'-- ومراقبة تأخر الاستجابة", "بفحص الكوكيز"], ans: 1 }, { text: "أي من تقنيات حقن أوامر النظام تعمل على أنظمة Unix لكن ليس Windows؟", options: ["استخدام &", "استخدام ;", "استخدام $IFS لتجاوز مرشحات المسافات"], ans: 2 }]
-            },
-            {
-                id: 10, title: "الفصل 10 – ثغرات المسار", content: `<p><strong>الهجوم الأساسي:</strong> تعديل معامل يشير إلى ملف ليحتوي على ../ للخروج من الدليل الحالي، مثل ../../../../etc/passwd.</p>
-        <p><strong>تجاوز المرشحات:</strong> ترميز مزدوج (%252e%252e%252f)، Unicode (..%c0%af)، null byte (file%00.jpg)، إضافة مسار معروف ثم ../ (images/../../config).</p>
-        <p><strong>الاستغلال:</strong> قراءة ملفات حساسة (passwd، config، logs)، كتابة ملفات في المجلدات القابلة للتنفيذ (مثل webshell).</p>`, questions: [{ text: "كيف يمكن تجاوز مرشح يمنع النمط '../' لكنه لا يعالج الترميزات؟", options: ["باستخدام ....//", "باستخدام %2e%2e%2f", "باستخدام %252e%252e%252f"], ans: 2 }, { text: "ما فكرة إضافة null byte (%00) في هجوم المسار؟", options: ["لإنهاء السلسلة النصية مبكراً وتجاهل الامتداد المضاف من التطبيق", "لتعطيل التطبيق", "لجعل الملف غير مرئي"], ans: 0 }]
-            },
-            {
-                id: 11, title: "الفصل 11 – منطق التطبيق", content: `<p><strong>ما هي ثغرات المنطق؟</strong> افتراضات خاطئة من المطور يمكن استغلالها. أمثلة حقيقية من الكتاب:</p>
-        <ul><li>حذف معامل 'كلمة المرور الحالية' في طلب تغيير كلمة المرور ← يصبح المستخدم مديراً.</li>
-        <li>تخطي مرحلة الدفع والذهاب مباشرة لمرحلة التأكيد ← طلب دون دفع.</li>
-        <li>إرسال معاملات من مرحلة مبكرة في مرحلة متأخرة (مثل السعر).</li>
-        <li>استخدام أرقام سالبة لتجاوز حدود التحويل المالي.</li>
-        <li>سباق (race condition) في تسجيل الدخول عند استخدام متغير static.</li></ul>
-        <p><strong>الاختبار:</strong> تغيير ترتيب الخطوات، حذف معاملات، إضافة معاملات غير متوقعة، تجربة قيم حدية (سالب، كبير، صفر).</p>`, questions: [{ text: "أي من الأمثلة التالية يعتبر ثغرة منطق تطبيق وليس ثغرة تقنية (مثل SQLi)؟", options: ["تجاوز مرحلة الدفع بالذهاب مباشرة لمرحلة التأكيد", "تعديل معرف docid لعرض مستند آخر", "إدخال ' في حقل البحث"], ans: 0 }, { text: "كيف يمكن اكتشاف ثغرات المنطق أثناء الاختبار؟", options: ["باستخدام ماسح ثغرات آلي", "بتغيير تسلسل العمليات وحذف معاملات بطريقة غير متوقعة", "بفحص رأس Server فقط"], ans: 1 }]
-            },
-            {
-                id: 12, title: "الفصل 12 – مهاجمة المستخدمين الآخرين", content: `<p><strong>أنواع XSS:</strong> Reflected (تظهر في الرد فوراً)، Stored (تُخزن ثم تُعرض)، DOM‑based (تُنفذ عبر كود JavaScript في المتصفح دون إرسالها للخادم).</p>
-        <p><strong>استغلال XSS:</strong> سرقة الجلسة (document.cookie)، تشويه الموقع، إضافة طروادة (نموذج دخول مزيف)، إجبار المستخدم على إجراءات (CSRF).</p>
-        <p><strong>تجاوز مرشحات XSS:</strong> <ScRiPt>، <scr<script>ipt>، ترميز UTF‑7، null bytes، استخدام أحداث HTML (onerror, onload).</p>
-        <p><strong>CSRF (تزوير الطلبات):</strong> استغلال حقيقة أن المتصفح يرسل الكوكيز تلقائياً مع أي طلب، حتى لو جاء من موقع آخر. الوقاية: استخدام رموز غير قابلة للتخمين في كل طلب.</p>`, questions: [{ text: "أي نوع من XSS لا يظهر أبداً في رد الخادم، ويتم تنفيذه بالكامل في المتصفح؟", options: ["Reflected XSS", "Stored XSS", "DOM‑based XSS"], ans: 2 }, { text: "ما هي آلية الدفاع الأكثر فعالية ضد هجمات CSRF (Cross-Site Request Forgery)؟", options: ["استخدام Referer header", "إضافة رمز عشوائي غير متوقع (CSRF token) في كل طلب حساس", "استخدام HTTPS فقط"], ans: 1 }]
-            },
-            {
-                id: 13, title: "الفصل 13 – أتمتة الهجمات", content: `<p><strong>استخدامات الأتمتة:</strong> تعداد المعرفات الصالحة (أسماء المستخدمين، أرقام المستندات)، استخراج البيانات (الملفات الشخصية لجميع المستخدمين)، Fuzzing (اختبار كل المعاملات بحمولات هجومية).</p>
-        <p><strong>كشف الإصابات:</strong> طول الرد، رمز HTTP، وجود نصوص محددة (مثل 'Invalid' أو 'Welcome')، وقت الاستجابة، رأس Set-Cookie.</p>
-        <p><strong>أدوات الأتمتة:</strong> Burp Intruder (مع أنماط Sniper, Battering ram, Pitchfork, Cluster bomb)، وسكريبتات مخصصة بلغة جافا أو بايثون.</p>`, questions: [{ text: "أي نمط من أنماط Burp Intruder يغير معامل واحد فقط في كل مرة مع تكرار كل الحمولات عليه قبل الانتقال للمعامل التالي؟", options: ["Sniper", "Battering ram", "Cluster bomb"], ans: 0 }, { text: "ما هي أفضل مؤشرات كشف 'الإصابة' عند تعداد أرقام المستندات؟", options: ["لون الصفحة", "طول الرد أو رمز HTTP 200 مقابل 404", "وجود صوت"], ans: 1 }]
-            },
-            {
-                id: 14, title: "الفصل 14 – تسرب المعلومات", content: `<p><strong>أخطاء مفيدة:</strong> رسائل الخطأ الخاصة بالسكريبت (تكشف رقم السطر)، Stack traces (تكشف أسماء المكونات وإصداراتها)، أخطاء قاعدة البيانات (قد تعرض الاستعلام نفسه).</p>
-        <p><strong>استغلال الأخطاء:</strong> في MS-SQL، خطأ تحويل النص إلى رقم يعرض النص الأصلي، مما يمكن استخدامه لاستخراج بيانات (مثل معرفة @@version).</p>
-        <p><strong>الاستدلال (Inference):</strong> فروق زمنية (معالجة اسم مستخدم صالح تستغرق وقتاً أطول)، سلوك مختلف عند وجود بيانات معينة.</p>`, questions: [{ text: "كيف يمكن استغلال خطأ ODBC الذي يقول 'Syntax error converting the varchar value ... to int' لصالح المهاجم؟", options: ["لا يمكن استغلاله", "يُستخدم لعرض قيمة النص الذي تسبب في الخطأ، مثل نتيجة استعلام فرعي", "يُستخدم لتعطيل الخادم"], ans: 1 }, { text: "ما هي المعلومات التي يمكن أن يكشفها Stack trace للمهاجم؟", options: ["كلمات المرور المشفرة", "أسماء الدوال والمكتبات المستخدمة، وإصدارات الإطار", "محتوى قاعدة البيانات"], ans: 1 }]
-            },
-            {
-                id: 15, title: "الفصل 15 – مهاجمة التطبيقات المجمعة", content: `<p><strong>Buffer Overflows:</strong> Stack overflow (الكتابة فوق عنوان العودة)، Heap overflow (الكتابة فوق بنى التحكم)، Off‑by‑one (كتابة بايت واحد خارج المخزن).</p>
-        <p><strong>Integer Vulnerabilities:</strong> Integer overflow (تجاوز الحد الأعلى فيرجع رقم صغير)، Signedness errors (الأعداد السالبة تعامل كموجبة كبيرة).</p>
-        <p><strong>Format String:</strong> استخدام %n, %s للكتابة في عناوين الذاكرة.</p>
-        <p><strong>الاكتشاف:</strong> إرسال سلاسل طويلة جداً (1100, 4200, 33000 بايت) ومراقبة الأعطال (HTTP 500، انقطاع الاتصال، توقف الخدمة).</p>`, questions: [{ text: "أي من هذه الثغرات ناتجة عن خلل في إدارة المخازن المؤقتة في لغة C/C++؟", options: ["SQL Injection", "Buffer Overflow", "XSS"], ans: 1 }, { text: "ما هو Off‑by‑one vulnerability؟", options: ["كتابة بايت واحد خارج حدود المخزن المخصص", "كتابة 100 بايت", "ثغرة في التشفير"], ans: 0 }]
-            },
-            {
-                id: 16, title: "الفصل 16 – بنية التطبيق", content: `<p><strong>البنية متعددة الطبقات:</strong> عرض (Presentation)، منطق (Application)، بيانات (Data). ثغرات الثقة: الطبقات تثق ببعضها، فإذا اخترقت طبقة التطبيق (مثلاً SQL injection)، فإن قاعدة البيانات تنفذ كل الأوامر دون تحقق إضافي.</p>
-        <p><strong>البيئات المستضافة المشتركة:</strong> عميل خبيث يرفع سكريبت خلفي (backdoor) يمكنه الوصول إلى ملفات العملاء الآخرين. ثغرة في تطبيق (مثل Path traversal) يمكن أن تعرض بيانات جميع التطبيقات المجاورة.</p>
-        <p><strong>الوقاية:</strong> عزل الحسابات (كل عميل بحساب نظام تشغيل منفصل)، قواعد بيانات منفصلة، استخدام أقل الصلاحيات الممكنة لكل مكون.</p>`, questions: [{ text: "لماذا تُعتبر البيئات المستضافة المشتركة (Shared Hosting) أكثر خطورة من الخوادم المخصصة؟", options: ["لأنها أبطأ", "لأن اختراق تطبيق واحد قد يؤدي إلى اختراق باقي التطبيقات على الخادم نفسه", "لأن دعمها الفني ضعيف"], ans: 1 }, { text: "كيف يمكن تقليل الضرر الناتج عن اختراق طبقة التطبيق (Web) للوصول إلى قاعدة البيانات؟", options: ["استخدام حسابات قاعدة بيانات بصلاحيات محدودة (قراءة فقط عند الحاجة)", "تشفير الاتصال فقط", "إلغاء قاعدة البيانات"], ans: 0 }]
-            },
-            {
-                id: 17, title: "الفصل 17 – خادم الويب", content: `<p><strong>تهيئات ضعيفة:</strong> بيانات اعتماد افتراضية (admin/admin)، محتوى افتراضي خطير (phpinfo.php، أمثلة IIS)، قوائم الدليل (Directory listing) التي تعرض الملفات المخفية.</p>
-        <p><strong>طرق HTTP الخطيرة:</strong> PUT (رفع ملفات)، DELETE (حذف)، TRACE (يمكن استغلاله في هجمات XST مع HttpOnly cookies).</p>
-        <p><strong>ثغرات برمجية تاريخية:</strong> IIS Unicode path traversal (..%c0%af)، Apache chunked encoding، Oracle PL/SQL exclusion list bypass.</p>`, questions: [{ text: "أي من طرق HTTP إذا كانت مفعلة على الخادم تسمح للمهاجم برفع ملف ويب شل (webshell) مباشرة؟", options: ["GET", "POST", "PUT"], ans: 2 }, { text: "ما هي ثغرة IIS Unicode path traversal التي ظهرت عام 2000؟", options: ["استخدام ..%c0%af لتجاوز المرشحات", "حقن SQL في URL", "XSS في رأس"], ans: 0 }]
-            },
-            {
-                id: 18, title: "الفصل 18 – مراجعة الكود المصدري", content: `<p><strong>توقيعات الثغرات الشائعة:</strong> XSS: البحث عن document.write أو innerHtml مع بيانات من request parameter. SQLi: البحث عن "SELECT ... WHERE ... = '" + متغير. Path traversal: البحث عن File أو FileInputStream مع مسار من المستخدم.</p>
-        <p><strong>التركيز على الدوال الخطيرة لكل لغة:</strong> Java (getParameter, createStatement, Runtime.exec)، .NET (Request, SqlCommand, Process.Start)، PHP ($_GET, $_POST, mysql_query, eval, system)، Perl (param, open, system).</p>
-        <p><strong>تعليقات المصدر:</strong> ابحث عن كلمات مثل "TODO: fix security"، "bug"، "overflow"، "backdoor".</p>`, questions: [{ text: "أي من هذه العبارات في كود Java تشير إلى احتمالية وجود SQL Injection؟", options: ["PreparedStatement p = conn.prepareStatement(sql)", "String query = \"SELECT * FROM users WHERE id = \" + userId", "session.setAttribute"], ans: 1 }, { text: "ما هي الدالة في PHP التي قد تسمح بتنفيذ كود ديناميكي من مدخلات المستخدم وتعتبر خطيرة جداً؟", options: ["include()", "eval()", "fopen()"], ans: 1 }]
-            },
-            {
-                id: 19, title: "الفصل 19 – أدوات الهاكر", content: `<p><strong>أدوات أساسية:</strong> Burp Suite (وكيل اعتراض، سبايدر، Intruder، Repeater، Decoder)، Nikto (كشف المحتوى الافتراضي)، Hydra (هجوم القوة الغاشمة على نماذج الدخول).</p>
-        <p><strong>أدوات مساعدة:</strong> Curl/Wget لطلبات HTTP، Netcat لنقل البيانات وإنشاء مستمع، Stunnel لإضافة SSL لأدوات لا تدعمه.</p>
-        <p><strong>ماسحات الثغرات التجارية:</strong> AppScan (IBM) و WebInspect (HP) – تكتشف XSS و SQLi البسيطة لكنها لا تغطي ثغرات المنطق أو التحكم في الوصول المتقدمة.</p>`, questions: [{ text: "أي أداة تعتبر الأكثر شمولاً وتكاملاً لاختبار تطبيقات الويب وفقاً للكتاب؟", options: ["Nikto", "Hydra", "Burp Suite"], ans: 2 }, { text: "ما هي الوظيفة الأساسية لأداة Nikto؟", options: ["اعتراض الطلبات", "تخمين كلمات المرور", "اكتشاف الملفات والدلائل الافتراضية المعروفة"], ans: 2 }]
-            },
-            {
-                id: 20, title: "الفصل 20 – المنهجية الكاملة", content: `<p><strong>الخطوات الـ 12 الرئيسية:</strong></p>
-        <ol><li>رسم خريطة التطبيق (استكشاف الروابط والمحتوى المخفي).</li><li>تحليل التطبيق (نقاط الإدخال، التقنيات، سطح الهجوم).</li><li>اختبار ضوابط جانب العميل (الحقول المخفية، JavaScript، المكونات السميكة).</li><li>اختبار المصادقة (جودة كلمات المرور، القوة الغاشمة، استعادة الحساب).</li><li>اختبار إدارة الجلسات (تخمين الرموز، تسربها، نطاق الكوكيز).</li><li>اختبار التحكم في الوصول (تسلية رأسية وأفقية).</li><li>اختبار المدخلات (Fuzzing جميع المعاملات بحمولات SQLi, XSS, Path traversal).</li><li>اختبار ثغرات خاصة بالوظائف (حقن SMTP, LDAP, XPath).</li><li>اختبار ثغرات المنطق (تغيير التسلسل، حذف معاملات).</li><li>اختبار الاستضافة المشتركة (العزل بين التطبيقات).</li><li>اختبار خادم الويب (المحتوى الافتراضي، طرق HTTP).</li><li>فحوصات متنوعة (DOM-based XSS, Frame injection, الخصوصية المحلية).</li></ol>
-        <p><strong>نصائح عملية:</strong> ترميز الأحرف الخاصة (%26, %3d)، عدم الوثوق بالبيانات من العميل، توثيق كل خطوة.</p>`, questions: [{ text: "كم عدد الخطوات الأساسية في المنهجية التي يقدمها الفصل 20؟", options: ["8", "12", "15"], ans: 1 }, { text: "أي خطوة تسبق اختبار المصادقة مباشرة في المنهجية؟", options: ["اختبار خادم الويب", "اختبار ضوابط جانب العميل", "اختبار ثغرات المنطق"], ans: 1 }]
+    <!-- FOOTER -->
+    <footer>
+      <p>🛡️ Web Application Hacker's Handbook Interactive Tutorial | Build with ❤️ for Cybersecurity Learners</p>
+      <p>Version 1.0 | Offline-First | Pure Vanilla HTML/CSS/JavaScript</p>
+    </footer>
+  </div>
+
+  <script>
+    // ===== APP INITIALIZATION =====
+    class WHHApp {
+      constructor() {
+        this.currentLanguage = 'en';
+        this.currentChapter = 0;
+        this.chapters = [];
+        this.quizzes = [];
+        this.progress = {};
+        this.notes = {};
+        this.settings = {};
+        
+        this.init();
+      }
+
+      // ===== INITIALIZATION =====
+      async init() {
+        this.loadSettings();
+        this.createChapters();
+        this.createQuizzes();
+        this.loadProgress();
+        this.loadNotes();
+        this.setupEventListeners();
+        this.renderChapterList();
+        this.selectChapter(0);
+        this.updateDashboard();
+      }
+
+      // ===== SETTINGS & STORAGE =====
+      loadSettings() {
+        const saved = localStorage.getItem('whh_settings');
+        if (saved) {
+          this.settings = JSON.parse(saved);
+          this.currentLanguage = this.settings.language || 'en';
+          this.applyLanguage();
+        }
+      }
+
+      saveSettings() {
+        localStorage.setItem('whh_settings', JSON.stringify(this.settings));
+      }
+
+      loadProgress() {
+        const saved = localStorage.getItem('whh_progress');
+        if (saved) {
+          this.progress = JSON.parse(saved);
+        } else {
+          this.chapters.forEach((_, idx) => {
+            this.progress[idx] = { completed: false, quizScore: null, lastViewed: null };
+          });
+        }
+      }
+
+      saveProgress() {
+        localStorage.setItem('whh_progress', JSON.stringify(this.progress));
+      }
+
+      loadNotes() {
+        const saved = localStorage.getItem('whh_notes');
+        if (saved) {
+          this.notes = JSON.parse(saved);
+        } else {
+          this.notes = {};
+        }
+      }
+
+      saveNotes() {
+        localStorage.setItem('whh_notes', JSON.stringify(this.notes));
+      }
+
+      // ===== LANGUAGE SUPPORT =====
+      applyLanguage() {
+        const html = document.documentElement;
+        if (this.currentLanguage === 'ar') {
+          html.lang = 'ar';
+          html.dir = 'rtl';
+        } else {
+          html.lang = 'en';
+          html.dir = 'ltr';
+        }
+        this.updateUILabels();
+      }
+
+      updateUILabels() {
+        const labels = {
+          en: {
+            chapterListTitle: 'Chapters',
+            searchPlaceholder: 'Search chapters...',
+            langToggle: 'EN / العربية',
+          },
+          ar: {
+            chapterListTitle: 'الفصول',
+            searchPlaceholder: 'ابحث عن الفصول...',
+            langToggle: 'EN / العربية',
+          }
+        };
+
+        const currentLabels = labels[this.currentLanguage];
+        document.getElementById('chapterListTitle').textContent = currentLabels.chapterListTitle;
+        document.getElementById('searchInput').placeholder = currentLabels.searchPlaceholder;
+      }
+
+      // ===== CHAPTER MANAGEMENT =====
+      createChapters() {
+        this.chapters = [
+          {
+            id: 0,
+            title: { en: 'Web Application Fundamentals', ar: 'أساسيات تطبيقات الويب' },
+            subtitle: { en: 'Understanding the basics', ar: 'فهم الأساسيات' },
+            content: {
+              en: `<h3>Introduction to Web Applications</h3>
+<p>Web applications are software programs that run on web servers and are accessed by users through web browsers. Understanding their architecture is crucial for identifying and exploiting vulnerabilities.</p>
+
+<h3>Key Components</h3>
+<ul>
+  <li><strong>Client-Side:</strong> Browser, HTML, CSS, JavaScript</li>
+  <li><strong>Server-Side:</strong> Web server, application server, database</li>
+  <li><strong>Communication:</strong> HTTP/HTTPS protocols</li>
+  <li><strong>Data Storage:</strong> Databases, file systems</li>
+</ul>
+
+<h3>HTTP Protocol Basics</h3>
+<p>The Hypertext Transfer Protocol (HTTP) is the foundation of web communication. Understanding HTTP requests and responses is essential for identifying vulnerabilities.</p>
+
+<div class="code-block">
+GET /products?id=123 HTTP/1.1
+Host: example.com
+User-Agent: Mozilla/5.0
+Accept: text/html
+</div>
+
+<div class="key-point">
+<strong>Key Insight:</strong> Every interaction between client and server goes through HTTP. By understanding this protocol, you can identify how data flows and where vulnerabilities might exist.
+</div>
+
+<h3>Request Methods</h3>
+<ul>
+  <li><strong>GET:</strong> Retrieve data from server</li>
+  <li><strong>POST:</strong> Submit data to server</li>
+  <li><strong>PUT:</strong> Update existing resources</li>
+  <li><strong>DELETE:</strong> Remove resources</li>
+  <li><strong>HEAD:</strong> Like GET but without response body</li>
+</ul>
+
+<h3>Security Considerations</h3>
+<p>Always use HTTPS for sensitive operations. HTTP transmits data in plain text, making it vulnerable to interception.</p>`,
+              ar: `<h3>مقدمة إلى تطبيقات الويب</h3>
+<p>تطبيقات الويب هي برامج تعمل على خوادم الويب ويتم الوصول إليها من خلال متصفحات الويب. يعتبر فهم بنيتها حاسماً لتحديد واستغلال الثغرات الأمنية.</p>
+
+<h3>المكونات الرئيسية</h3>
+<ul>
+  <li><strong>جانب العميل:</strong> المتصفح، HTML، CSS، JavaScript</li>
+  <li><strong>جانب الخادم:</strong> خادم الويب، خادم التطبيق، قاعدة البيانات</li>
+  <li><strong>الاتصال:</strong> بروتوكولات HTTP/HTTPS</li>
+  <li><strong>تخزين البيانات:</strong> قواعد البيانات وأنظمة الملفات</li>
+</ul>`
             }
+          },
+          {
+            id: 1,
+            title: { en: 'SQL Injection', ar: 'حقن SQL' },
+            subtitle: { en: 'Exploiting database queries', ar: 'استغلال استعلامات قاعدة البيانات' },
+            content: {
+              en: `<h3>What is SQL Injection?</h3>
+<p>SQL Injection (SQLi) is a code injection technique where an attacker inserts malicious SQL statements into a query field, allowing them to manipulate the database.</p>
+
+<h3>Vulnerable Code Example</h3>
+<div class="code-block">
+// VULNERABLE
+String query = "SELECT * FROM users WHERE username='" + username + "'";
+stmt.executeQuery(query);
+</div>
+
+<h3>Attack Scenario</h3>
+<p>If an attacker enters: <code>admin' --</code></p>
+<p>The query becomes:</p>
+<div class="code-block">
+SELECT * FROM users WHERE username='admin' --'
+</div>
+<p>This effectively logs in as 'admin' without knowing the password!</p>
+
+<h3>Secure Code Example</h3>
+<div class="code-block">
+// SECURE - Using parameterized queries
+PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM users WHERE username=?");
+pstmt.setString(1, username);
+pstmt.executeQuery();
+</div>
+
+<div class="key-point">
+<strong>Prevention:</strong> Always use parameterized queries (prepared statements) to separate code from data.
+</div>
+
+<h3>Impact</h3>
+<ul>
+  <li>Unauthorized data access</li>
+  <li>Database modification or deletion</li>
+  <li>Authentication bypass</li>
+  <li>Complete system compromise</li>
+</ul>`,
+              ar: `<h3>ما هو حقن SQL؟</h3>
+<p>حقن SQL هو تقنية حقن أكواد حيث يقوم المهاجم بإدراج عبارات SQL خبيثة في حقل الاستعلام، مما يسمح له بالتلاعب بقاعدة البيانات.</p>`
+            }
+          },
+          {
+            id: 2,
+            title: { en: 'Cross-Site Scripting (XSS)', ar: 'هجمات الحقن عبر المتصفح' },
+            subtitle: { en: 'Injecting malicious scripts', ar: 'حقن البرامج النصية الخبيثة' },
+            content: {
+              en: `<h3>What is XSS?</h3>
+<p>Cross-Site Scripting (XSS) is a vulnerability that allows attackers to inject malicious JavaScript code into web pages viewed by other users.</p>
+
+<h3>Types of XSS</h3>
+<ul>
+  <li><strong>Stored XSS:</strong> Malicious code stored in database</li>
+  <li><strong>Reflected XSS:</strong> Attack in URL parameters</li>
+  <li><strong>DOM-Based XSS:</strong> Vulnerability in client-side JavaScript</li>
+</ul>
+
+<h3>Reflected XSS Example</h3>
+<div class="code-block">
+// Attacker sends: http://example.com/search?q=&lt;script&gt;alert('XSS')&lt;/script&gt;
+// If unescaped output: 
+&lt;p&gt;Results for: &lt;script&gt;alert('XSS')&lt;/script&gt;&lt;/p&gt;
+</div>
+
+<h3>Prevention Techniques</h3>
+<ul>
+  <li>Escape HTML special characters</li>
+  <li>Use Content Security Policy (CSP)</li>
+  <li>Validate and sanitize all input</li>
+  <li>Use templating engines with auto-escape</li>
+</ul>
+
+<div class="key-point">
+<strong>Defense:</strong> Never trust user input. Always encode output based on context (HTML, URL, JavaScript, CSS).
+</div>`,
+              ar: `<h3>ما هو XSS؟</h3>
+<p>هجمات الحقن عبر المتصفح (XSS) هي ثغرة تسمح للمهاجمين بحقن أكواد JavaScript خبيثة في صفحات الويب التي يراها المستخدمون الآخرون.</p>`
+            }
+          },
+          {
+            id: 3,
+            title: { en: 'Cross-Site Request Forgery (CSRF)', ar: 'تزييف الطلبات عبر المواقع' },
+            subtitle: { en: 'Forging user requests', ar: 'تزييف طلبات المستخدم' },
+            content: {
+              en: `<h3>Understanding CSRF</h3>
+<p>Cross-Site Request Forgery is an attack where a malicious website tricks your browser into making unwanted requests to another site where you're authenticated.</p>
+
+<h3>Attack Flow</h3>
+<ol>
+  <li>User logs into their bank website</li>
+  <li>Without logging out, user visits a malicious website</li>
+  <li>The malicious site contains: &lt;img src="bank.com/transfer?amount=1000&to=attacker"&gt;</li>
+  <li>Browser automatically sends the request with authentication cookies</li>
+  <li>Money is transferred without user's knowledge</li>
+</ol>
+
+<h3>Prevention Methods</h3>
+<ul>
+  <li><strong>CSRF Tokens:</strong> Use unique tokens per request</li>
+  <li><strong>SameSite Cookies:</strong> Set SameSite flag on cookies</li>
+  <li><strong>Double Submit Cookies:</strong> Verify token in both cookie and form</li>
+  <li><strong>Origin Verification:</strong> Check Referer header</li>
+</ul>
+
+<div class="code-block">
+// Protected form with CSRF token
+&lt;form method="POST" action="/transfer"&gt;
+  &lt;input type="hidden" name="csrf_token" value="random_token_here"&gt;
+  &lt;input type="text" name="amount"&gt;
+  &lt;button type="submit"&gt;Transfer&lt;/button&gt;
+&lt;/form&gt;
+</div>`,
+              ar: `<h3>فهم CSRF</h3>
+<p>تزييف الطلبات عبر المواقع هو هجوم يخدع فيه موقع ويب خبيث متصفحك ليقدم طلبات غير مرغوبة إلى موقع آخر حيث أنت مصرح.</p>`
+            }
+          },
+          {
+            id: 4,
+            title: { en: 'Authentication Flaws', ar: 'أخطاء المصادقة' },
+            subtitle: { en: 'Breaking authentication mechanisms', ar: 'كسر آليات المصادقة' },
+            content: {
+              en: `<h3>Common Authentication Vulnerabilities</h3>
+<p>Authentication is the process of verifying that a user is who they claim to be. Flaws in authentication can lead to unauthorized access.</p>
+
+<h3>Weak Password Policies</h3>
+<ul>
+  <li>Short password requirements</li>
+  <li>No complexity requirements</li>
+  <li>Passwords stored in plain text</li>
+  <li>Default credentials not changed</li>
+</ul>
+
+<h3>Brute Force Attacks</h3>
+<p>Attackers can try to guess passwords by making multiple login attempts:</p>
+<div class="code-block">
+for password in wordlist:
+    if login(username, password):
+        print("Password found!")
+        break
+</div>
+
+<h3>Credential Storage Best Practices</h3>
+<ul>
+  <li>Use strong hashing algorithms (bcrypt, PBKDF2)</li>
+  <li>Add salt to prevent rainbow table attacks</li>
+  <li>Implement rate limiting on login attempts</li>
+  <li>Use multi-factor authentication (MFA)</li>
+</ul>
+
+<h3>OAuth 2.0 & OpenID Connect</h3>
+<p>Modern applications should use delegated authentication protocols to avoid handling passwords directly.</p>`,
+              ar: `<h3>نقاط ضعف شائعة في المصادقة</h3>
+<p>المصادقة هي عملية التحقق من أن المستخدم هو من يدّعيه. الأخطاء في المصادقة يمكن أن تؤدي إلى وصول غير مصرح.</p>`
+            }
+          },
+          {
+            id: 5,
+            title: { en: 'Session Management', ar: 'إدارة الجلسات' },
+            subtitle: { en: 'Securing user sessions', ar: 'تأمين جلسات المستخدم' },
+            content: {
+              en: `<h3>Session Management Overview</h3>
+<p>Sessions maintain user state across multiple requests. Improper session management can lead to unauthorized access and data theft.</p>
+<h3>Session Hijacking</h3>
+<p>Attackers can steal session cookies to impersonate users. Always use secure session handling.</p>
+<h3>Best Practices</h3>
+<ul>
+  <li>Use HTTPS to encrypt session data in transit</li>
+  <li>Set secure and httpOnly flags on cookies</li>
+  <li>Implement session timeouts</li>
+  <li>Regenerate session IDs on login/logout</li>
+  <li>Use SameSite cookie attribute</li>
+</ul>`,
+              ar: `<h3>نظرة عامة على إدارة الجلسات</h3>
+<p>تحافظ الجلسات على حالة المستخدم عبر طلبات متعددة. قد تؤدي إدارة الجلسات غير الصحيحة إلى وصول غير مصرح وسرقة البيانات.</p>`
+            }
+          },
+          {
+            id: 6,
+            title: { en: 'Input Validation & Output Encoding', ar: 'التحقق من الإدخال وترميز المخرجات' },
+            subtitle: { en: 'Sanitizing data flows', ar: 'تنقية تدفقات البيانات' },
+            content: {
+              en: `<h3>Input Validation</h3>
+<p>All user input should be validated before processing. Never trust user-supplied data.</p>
+<h3>Best Practices</h3>
+<ul>
+  <li><strong>Whitelisting:</strong> Accept only known-good input</li>
+  <li><strong>Type Checking:</strong> Ensure data matches expected type</li>
+  <li><strong>Length Limits:</strong> Restrict input size</li>
+  <li><strong>Format Validation:</strong> Email, phone, date formats</li>
+</ul>`,
+              ar: `<h3>التحقق من الإدخال</h3>
+<p>يجب التحقق من جميع بيانات المستخدم قبل المعالجة. لا تثق أبداً في البيانات المرسلة من المستخدم.</p>`
+            }
+          },
+          {
+            id: 7,
+            title: { en: 'Error Handling & Information Disclosure', ar: 'معالجة الأخطاء والكشف عن المعلومات' },
+            subtitle: { en: 'Preventing information leakage', ar: 'منع تسرب المعلومات' },
+            content: {
+              en: `<h3>Error Handling Risks</h3>
+<p>Improper error handling can leak sensitive information to attackers.</p>
+<h3>Information Disclosure Examples</h3>
+<ul>
+  <li>Stack traces showing source code paths</li>
+  <li>Database error messages</li>
+  <li>Server version information</li>
+</ul>`,
+              ar: `<h3>مخاطر معالجة الأخطاء</h3>
+<p>قد تؤدي معالجة الأخطاء غير الصحيحة إلى تسرب معلومات حساسة.</p>`
+            }
+          },
+          {
+            id: 8,
+            title: { en: 'Access Control & Authorization', ar: 'التحكم في الوصول والتفويض' },
+            subtitle: { en: 'Enforcing permissions', ar: 'فرض الأذونات' },
+            content: {
+              en: `<h3>Access Control Models</h3>
+<p>Access control determines what resources users can access.</p>
+<h3>Privilege Escalation</h3>
+<p>Attackers exploit authorization flaws to gain higher privileges.</p>`,
+              ar: `<h3>نماذج التحكم في الوصول</h3>
+<p>يحدد التحكم في الوصول الموارد التي يمكن للمستخدمين الوصول إليها.</p>`
+            }
+          },
+          {
+            id: 9,
+            title: { en: 'File Upload Vulnerabilities', ar: 'ثغرات تحميل الملفات' },
+            subtitle: { en: 'Exploiting file operations', ar: 'استغلال عمليات الملفات' },
+            content: {
+              en: `<h3>File Upload Risks</h3>
+<p>Improper file upload handling can lead to code execution.</p>
+<h3>Secure File Handling</h3>
+<ul>
+  <li>Validate file type (magic bytes)</li>
+  <li>Store uploads outside web root</li>
+  <li>Rename uploaded files</li>
+</ul>`,
+              ar: `<h3>مخاطر تحميل الملفات</h3>
+<p>قد يؤدي التعامل غير الصحيح مع تحميل الملفات إلى تنفيذ الأكواد.</p>`
+            }
+          },
+          {
+            id: 10,
+            title: { en: 'Business Logic Flaws', ar: 'أخطاء المنطق التجاري' },
+            subtitle: { en: 'Breaking workflows', ar: 'كسر سير العمل' },
+            content: {
+              en: `<h3>Business Logic Vulnerabilities</h3>
+<p>Flaws in application logic allow unauthorized actions.</p>
+<h3>Testing Methodology</h3>
+<ul>
+  <li>Understand the business process</li>
+  <li>Test boundary conditions</li>
+  <li>Look for timing-related issues</li>
+</ul>`,
+              ar: `<h3>ثغرات المنطق التجاري</h3>
+<p>تسمح الأخطاء في منطق التطبيق بتنفيذ إجراءات غير مصرح بها.</p>`
+            }
+          },
+          {
+            id: 11,
+            title: { en: 'API Security', ar: 'أمان API' },
+            subtitle: { en: 'Securing web services', ar: 'تأمين خدمات الويب' },
+            content: {
+              en: `<h3>API-Specific Vulnerabilities</h3>
+<p>APIs expose significant attack surface and require security measures.</p>
+<h3>Securing APIs</h3>
+<ul>
+  <li>Use OAuth 2.0 / OpenID Connect</li>
+  <li>Add rate limiting</li>
+  <li>Validate input strictly</li>
+</ul>`,
+              ar: `<h3>ثغرات خاصة بـ API</h3>
+<p>تكشف واجهات برمجة التطبيقات سطح هجوم كبير.</p>`
+            }
+          },
+          {
+            id: 12,
+            title: { en: 'Client-Side Security', ar: 'أمان جانب العميل' },
+            subtitle: { en: 'Browser exploitation', ar: 'استغلال المتصفح' },
+            content: {
+              en: `<h3>Client-Side Vulnerabilities</h3>
+<p>Attacks on client-side code can compromise user privacy.</p>
+<h3>Defenses</h3>
+<ul>
+  <li>Use Content Security Policy (CSP)</li>
+  <li>Keep dependencies updated</li>
+  <li>Never store secrets client-side</li>
+</ul>`,
+              ar: `<h3>ثغرات جانب العميل</h3>
+<p>قد تؤدي الهجمات على أكواد جانب العميل إلى خرق الخصوصية.</p>`
+            }
+          },
+          {
+            id: 13,
+            title: { en: 'Server-Side Security', ar: 'أمان جانب الخادم' },
+            subtitle: { en: 'Backend protection', ar: 'حماية الواجهة الخلفية' },
+            content: {
+              en: `<h3>Server-Side Vulnerabilities</h3>
+<p>Backend vulnerabilities can lead to complete system compromise.</p>
+<h3>Hardening Measures</h3>
+<ul>
+  <li>Principle of least privilege</li>
+  <li>Keep software updated</li>
+  <li>Use security headers</li>
+</ul>`,
+              ar: `<h3>ثغرات جانب الخادم</h3>
+<p>قد تؤدي ثغرات الواجهة الخلفية إلى اختراق النظام الكامل.</p>`
+            }
+          },
+          {
+            id: 14,
+            title: { en: 'Cryptography & Encryption', ar: 'التشفير والبيانات المشفرة' },
+            subtitle: { en: 'Protecting data', ar: 'حماية البيانات' },
+            content: {
+              en: `<h3>Cryptography Basics</h3>
+<p>Cryptography protects data confidentiality, integrity, and authenticity.</p>
+<h3>Types</h3>
+<ul>
+  <li><strong>Symmetric:</strong> AES, DES</li>
+  <li><strong>Asymmetric:</strong> RSA, ECC</li>
+  <li><strong>Hashing:</strong> SHA-256</li>
+</ul>`,
+              ar: `<h3>أساسيات التشفير</h3>
+<p>يحمي التشفير سرية البيانات والنزاهة والأصالة.</p>`
+            }
+          },
+          {
+            id: 15,
+            title: { en: 'Defense Mechanisms & Security Headers', ar: 'آليات الدفاع ورؤوس الأمان' },
+            subtitle: { en: 'Implementing security controls', ar: 'تطبيق ضوابط الأمان' },
+            content: {
+              en: `<h3>Security Headers</h3>
+<p>HTTP security headers instruct browsers on handling content securely.</p>
+<h3>Essential Headers</h3>
+<ul>
+  <li><strong>Content-Security-Policy:</strong> Prevent XSS</li>
+  <li><strong>X-Frame-Options:</strong> Prevent clickjacking</li>
+  <li><strong>Strict-Transport-Security:</strong> Force HTTPS</li>
+</ul>`,
+              ar: `<h3>رؤوس الأمان</h3>
+<p>تعليمات رؤوس أمان HTTP للمتصفحات حول كيفية التعامل الآمن مع المحتوى.</p>`
+            }
+          },
+          {
+            id: 16,
+            title: { en: 'Exploitation Techniques', ar: 'تقنيات الاستغلال' },
+            subtitle: { en: 'Practical hacking', ar: 'القرصنة العملية' },
+            content: {
+              en: `<h3>Reconnaissance & Scanning</h3>
+<p>Gathering information about target applications.</p>
+<h3>Essential Tools</h3>
+<ul>
+  <li><strong>Burp Suite:</strong> Web app testing</li>
+  <li><strong>OWASP ZAP:</strong> Security scanning</li>
+  <li><strong>SQLmap:</strong> SQL injection automation</li>
+</ul>`,
+              ar: `<h3>الاستطلاع والمسح</h3>
+<p>جمع معلومات حول تطبيق الهدف.</p>`
+            }
+          },
+          {
+            id: 17,
+            title: { en: 'Testing & Assessment', ar: 'الاختبار والتقييم' },
+            subtitle: { en: 'Security testing methodology', ar: 'منهجية اختبار الأمان' },
+            content: {
+              en: `<h3>Security Testing Frameworks</h3>
+<p>Structured methodologies ensure comprehensive assessments.</p>
+<h3>Common Frameworks</h3>
+<ul>
+  <li><strong>OWASP Top 10:</strong> Critical risks</li>
+  <li><strong>PTES:</strong> Penetration Testing Standard</li>
+</ul>`,
+              ar: `<h3>أطر عمل اختبار الأمان</h3>
+<p>تضمن المنهجيات المنظمة تقييمات أمان شاملة.</p>`
+            }
+          },
+          {
+            id: 18,
+            title: { en: 'Incident Response', ar: 'الاستجابة للحوادث' },
+            subtitle: { en: 'Handling incidents', ar: 'التعامل مع الحوادث' },
+            content: {
+              en: `<h3>Incident Response Plan</h3>
+<p>Organizations should have procedures for security incidents.</p>
+<h3>Key Steps</h3>
+<ul>
+  <li>Preparation & Detection</li>
+  <li>Analysis & Containment</li>
+  <li>Eradication & Recovery</li>
+</ul>`,
+              ar: `<h3>خطة الاستجابة للحوادث</h3>
+<p>يجب أن يكون لدى المنظمات إجراءات للاستجابة للحوادث.</p>`
+            }
+          },
+          {
+            id: 19,
+            title: { en: 'Future Challenges', ar: 'التحديات المستقبلية' },
+            subtitle: { en: 'Emerging threats', ar: 'التهديدات الناشئة' },
+            content: {
+              en: `<h3>Emerging Security Challenges</h3>
+<p>Security landscape constantly evolves.</p>
+<h3>Areas</h3>
+<ul>
+  <li><strong>Cloud Security:</strong> Misconfigured services</li>
+  <li><strong>IoT Security:</strong> Weak protocols</li>
+  <li><strong>AI/ML Security:</strong> Adversarial attacks</li>
+</ul>`,
+              ar: `<h3>تحديات الأمان الناشئة</h3>
+<p>يتطور مشهد الأمان باستمرار مع التقنيات الجديدة.</p>`
+            }
+          }
         ];
+      }
 
-        let userProgress = JSON.parse(localStorage.getItem('deep_handbook_progress')) || {};
-        let userReviews = JSON.parse(localStorage.getItem('deep_handbook_reviews')) || {};
-        let currentId = 0;
+      createQuizzes() {
+        this.quizzes = [
+          {
+            chapterId: 0,
+            title: { en: 'Web Fundamentals Quiz', ar: 'اختبار أساسيات الويب' },
+            questions: [
+              {
+                text: { en: 'What does HTTP stand for?', ar: 'ماذا تعني كلمة HTTP؟' },
+                options: [
+                  { text: { en: 'HyperText Transfer Protocol', ar: 'بروتوكول نقل النصوص الفائقة' }, correct: true },
+                  { text: { en: 'High Transfer Text Protocol', ar: 'بروتوكول نقل النص العالي' }, correct: false },
+                  { text: { en: 'Home Terminal Transfer Protocol', ar: 'بروتوكول نقل المحطة الرئيسية' }, correct: false }
+                ]
+              },
+              {
+                text: { en: 'Which HTTP method is used to retrieve data?', ar: 'أي طريقة HTTP تُستخدم لاسترجاع البيانات؟' },
+                options: [
+                  { text: { en: 'POST', ar: 'POST' }, correct: false },
+                  { text: { en: 'GET', ar: 'GET' }, correct: true },
+                  { text: { en: 'DELETE', ar: 'DELETE' }, correct: false }
+                ]
+              },
+              {
+                text: { en: 'What should you always use for sensitive data transmission?', ar: 'ما الذي يجب استخدامه دائماً لنقل البيانات الحساسة؟' },
+                options: [
+                  { text: { en: 'HTTP', ar: 'HTTP' }, correct: false },
+                  { text: { en: 'HTTPS', ar: 'HTTPS' }, correct: true },
+                  { text: { en: 'FTP', ar: 'FTP' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 1,
+            title: { en: 'SQL Injection Quiz', ar: 'اختبار حقن SQL' },
+            questions: [
+              {
+                text: { en: 'What is the primary cause of SQL Injection?', ar: 'ما هو السبب الرئيسي لحقن SQL؟' },
+                options: [
+                  { text: { en: 'Using parameterized queries', ar: 'استخدام الاستعلامات المعاملية' }, correct: false },
+                  { text: { en: 'Concatenating user input directly into SQL queries', ar: 'دمج إدخال المستخدم مباشرة في استعلامات SQL' }, correct: true },
+                  { text: { en: 'Using prepared statements', ar: 'استخدام البيانات المجهزة مسبقاً' }, correct: false }
+                ]
+              },
+              {
+                text: { en: 'What is the best defense against SQL Injection?', ar: 'ما أفضل دفاع ضد حقن SQL؟' },
+                options: [
+                  { text: { en: 'Input validation only', ar: 'التحقق من الإدخال فقط' }, correct: false },
+                  { text: { en: 'Parameterized queries/Prepared statements', ar: 'الاستعلامات المعاملية / البيانات المجهزة' }, correct: true },
+                  { text: { en: 'Encryption of data', ar: 'تشفير البيانات' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 2,
+            title: { en: 'XSS Quiz', ar: 'اختبار XSS' },
+            questions: [
+              {
+                text: { en: 'What does XSS stand for?', ar: 'ماذا تعني كلمة XSS؟' },
+                options: [
+                  { text: { en: 'Cross-Site Scripting', ar: 'البرامج النصية عبر الموقع' }, correct: true },
+                  { text: { en: 'External Site Security', ar: 'أمان الموقع الخارجي' }, correct: false },
+                  { text: { en: 'XML Site Search', ar: 'بحث موقع XML' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 3,
+            title: { en: 'CSRF Quiz', ar: 'اختبار CSRF' },
+            questions: [
+              {
+                text: { en: 'What is CSRF?', ar: 'ما هو CSRF؟' },
+                options: [
+                  { text: { en: 'Cross-Site Request Forgery', ar: 'تزييف الطلبات عبر المواقع' }, correct: true },
+                  { text: { en: 'Central Server Request Format', ar: 'صيغة طلب الخادم المركزي' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 4,
+            title: { en: 'Authentication Quiz', ar: 'اختبار المصادقة' },
+            questions: [
+              {
+                text: { en: 'Which is NOT a strong authentication method?', ar: 'أي منها ليست طريقة مصادقة قوية؟' },
+                options: [
+                  { text: { en: 'Multi-factor authentication', ar: 'المصادقة متعددة العوامل' }, correct: false },
+                  { text: { en: 'Plain text passwords stored in database', ar: 'كلمات مرور نصية مخزنة في قاعدة البيانات' }, correct: true },
+                  { text: { en: 'Bcrypt hashed passwords with salt', ar: 'كلمات مرور مُشفرة بـ Bcrypt مع salt' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 5,
+            title: { en: 'Session Management Quiz', ar: 'اختبار إدارة الجلسات' },
+            questions: [
+              {
+                text: { en: 'What is session hijacking?', ar: 'ما هو اختطاف الجلسة؟' },
+                options: [
+                  { text: { en: 'Stealing session cookies to impersonate users', ar: 'سرقة ملفات تعريف الجلسة لانتحال شخصية المستخدمين' }, correct: true },
+                  { text: { en: 'Creating new user sessions', ar: 'إنشاء جلسات مستخدم جديدة' }, correct: false },
+                  { text: { en: 'Logging out users', ar: 'تسجيل خروج المستخدمين' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 6,
+            title: { en: 'Input Validation Quiz', ar: 'اختبار التحقق من الإدخال' },
+            questions: [
+              {
+                text: { en: 'What is whitelisting in input validation?', ar: 'ما هو القائمة البيضاء في التحقق من الإدخال؟' },
+                options: [
+                  { text: { en: 'Accepting only known-good input', ar: 'قبول الإدخال الجيد المعروف فقط' }, correct: true },
+                  { text: { en: 'Rejecting all input', ar: 'رفض جميع الإدخالات' }, correct: false },
+                  { text: { en: 'Blocking bad input', ar: 'حظر الإدخال السيء' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 7,
+            title: { en: 'Error Handling Quiz', ar: 'اختبار معالجة الأخطاء' },
+            questions: [
+              {
+                text: { en: 'Why should generic error messages be shown to users?', ar: 'لماذا يجب عرض رسائل خطأ عامة للمستخدمين؟' },
+                options: [
+                  { text: { en: 'To prevent information disclosure to attackers', ar: 'لمنع الكشف عن المعلومات للمهاجمين' }, correct: true },
+                  { text: { en: 'To confuse users', ar: 'لالتباس المستخدمين' }, correct: false },
+                  { text: { en: 'To save space', ar: 'لتوفير المساحة' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 8,
+            title: { en: 'Access Control Quiz', ar: 'اختبار التحكم في الوصول' },
+            questions: [
+              {
+                text: { en: 'What is privilege escalation?', ar: 'ما هو تصعيد الامتياز؟' },
+                options: [
+                  { text: { en: 'Gaining higher privileges than authorized', ar: 'الحصول على امتيازات أعلى مما هو مصرح' }, correct: true },
+                  { text: { en: 'Logging in as user', ar: 'تسجيل الدخول كمستخدم' }, correct: false },
+                  { text: { en: 'Creating user accounts', ar: 'إنشاء حسابات مستخدم' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 9,
+            title: { en: 'File Upload Quiz', ar: 'اختبار تحميل الملفات' },
+            questions: [
+              {
+                text: { en: 'Where should uploaded files be stored?', ar: 'أين يجب تخزين الملفات المرفوعة؟' },
+                options: [
+                  { text: { en: 'Outside the web root', ar: 'خارج جذر الويب' }, correct: true },
+                  { text: { en: 'In the web root', ar: 'في جذر الويب' }, correct: false },
+                  { text: { en: 'In browser cache', ar: 'في ذاكرة تخزين المتصفح' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 10,
+            title: { en: 'Business Logic Quiz', ar: 'اختبار المنطق التجاري' },
+            questions: [
+              {
+                text: { en: 'What is business logic testing?', ar: 'ما هو اختبار المنطق التجاري؟' },
+                options: [
+                  { text: { en: 'Testing if attackers can bypass business processes', ar: 'اختبار إذا كان بإمكان المهاجمين تجاوز العمليات التجارية' }, correct: true },
+                  { text: { en: 'Testing database queries', ar: 'اختبار استعلامات قاعدة البيانات' }, correct: false },
+                  { text: { en: 'Testing UI buttons', ar: 'اختبار أزرار واجهة المستخدم' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 11,
+            title: { en: 'API Security Quiz', ar: 'اختبار أمان API' },
+            questions: [
+              {
+                text: { en: 'What is an API key primarily for?', ar: 'ما هي فائدة مفتاح API بشكل أساسي؟' },
+                options: [
+                  { text: { en: 'Authentication and rate limiting', ar: 'المصادقة والحد من الطلبات' }, correct: true },
+                  { text: { en: 'Encryption', ar: 'التشفير' }, correct: false },
+                  { text: { en: 'Data validation', ar: 'التحقق من البيانات' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 12,
+            title: { en: 'Client-Side Security Quiz', ar: 'اختبار أمان جانب العميل' },
+            questions: [
+              {
+                text: { en: 'Should secrets be stored in client-side code?', ar: 'هل يجب تخزين الأسرار في كود جانب العميل؟' },
+                options: [
+                  { text: { en: 'No, never', ar: 'لا، أبداً' }, correct: true },
+                  { text: { en: 'Yes, if encrypted', ar: 'نعم، إذا كانت مشفرة' }, correct: false },
+                  { text: { en: 'Only for non-sensitive data', ar: 'فقط للبيانات غير الحساسة' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 13,
+            title: { en: 'Server-Side Security Quiz', ar: 'اختبار أمان جانب الخادم' },
+            questions: [
+              {
+                text: { en: 'What is the principle of least privilege?', ar: 'ما هو مبدأ الامتياز الأقل؟' },
+                options: [
+                  { text: { en: 'Give users only necessary permissions', ar: 'منح المستخدمين الأذونات الضرورية فقط' }, correct: true },
+                  { text: { en: 'Give all users maximum privileges', ar: 'منح جميع المستخدمين أقصى امتيازات' }, correct: false },
+                  { text: { en: 'Disable all permissions', ar: 'تعطيل جميع الأذونات' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 14,
+            title: { en: 'Cryptography Quiz', ar: 'اختبار التشفير' },
+            questions: [
+              {
+                text: { en: 'Which hashing algorithm is recommended?', ar: 'أي خوارزمية تجزئة موصى بها؟' },
+                options: [
+                  { text: { en: 'SHA-256', ar: 'SHA-256' }, correct: true },
+                  { text: { en: 'MD5', ar: 'MD5' }, correct: false },
+                  { text: { en: 'SHA-1', ar: 'SHA-1' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 15,
+            title: { en: 'Security Headers Quiz', ar: 'اختبار رؤوس الأمان' },
+            questions: [
+              {
+                text: { en: 'What does CSP protect against?', ar: 'ماذا يحمي CSP منها؟' },
+                options: [
+                  { text: { en: 'Cross-Site Scripting attacks', ar: 'هجمات البرامج النصية عبر الموقع' }, correct: true },
+                  { text: { en: 'SQL Injection', ar: 'حقن SQL' }, correct: false },
+                  { text: { en: 'CSRF', ar: 'CSRF' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 16,
+            title: { en: 'Exploitation Quiz', ar: 'اختبار الاستغلال' },
+            questions: [
+              {
+                text: { en: 'What is the first step in penetration testing?', ar: 'ما هي الخطوة الأولى في اختبار الاختراق؟' },
+                options: [
+                  { text: { en: 'Reconnaissance/Gathering information', ar: 'الاستطلاع / جمع المعلومات' }, correct: true },
+                  { text: { en: 'Exploitation', ar: 'الاستغلال' }, correct: false },
+                  { text: { en: 'Reporting', ar: 'الإبلاغ' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 17,
+            title: { en: 'Assessment Quiz', ar: 'اختبار التقييم' },
+            questions: [
+              {
+                text: { en: 'What is OWASP Top 10?', ar: 'ما هو قائمة OWASP العشرة الأولى؟' },
+                options: [
+                  { text: { en: 'Most critical web app security risks', ar: 'أخطر مخاطر أمان تطبيقات الويب' }, correct: true },
+                  { text: { en: 'Top 10 tools', ar: 'أفضل 10 أدوات' }, correct: false },
+                  { text: { en: 'Top 10 programming languages', ar: 'أفضل 10 لغات برمجة' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 18,
+            title: { en: 'Incident Response Quiz', ar: 'اختبار الاستجابة للحوادث' },
+            questions: [
+              {
+                text: { en: 'What is the first phase of incident response?', ar: 'ما هي المرحلة الأولى من الاستجابة للحوادث؟' },
+                options: [
+                  { text: { en: 'Preparation', ar: 'الإعداد' }, correct: true },
+                  { text: { en: 'Exploitation', ar: 'الاستغلال' }, correct: false },
+                  { text: { en: 'Recovery', ar: 'التعافي' }, correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            chapterId: 19,
+            title: { en: 'Future Challenges Quiz', ar: 'اختبار التحديات المستقبلية' },
+            questions: [
+              {
+                text: { en: 'What is Zero Trust Architecture?', ar: 'ما هي Zero Trust Architecture؟' },
+                options: [
+                  { text: { en: 'Never trust, always verify', ar: 'لا تثق أبداً، تحقق دائماً' }, correct: true },
+                  { text: { en: 'Trust everything by default', ar: 'الثقة بكل شيء افتراضياً' }, correct: false },
+                  { text: { en: 'No security model', ar: 'بدون نموذج أمان' }, correct: false }
+                ]
+              }
+            ]
+          }
+        ];
+      }
 
-        function updateProgress() {
-            let completed = 0;
-            for (let i = 0; i < chapters.length; i++) {
-                if (userProgress[i] && userProgress[i].passed) completed++;
+      // ===== EVENT LISTENERS =====
+      setupEventListeners() {
+        // View tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            this.switchView(e.target.dataset.view);
+          });
+        });
+
+        // Language toggle
+        document.getElementById('langToggle').addEventListener('click', () => {
+          this.currentLanguage = this.currentLanguage === 'en' ? 'ar' : 'en';
+          this.settings.language = this.currentLanguage;
+          this.saveSettings();
+          this.applyLanguage();
+          this.renderChapterList();
+          this.selectChapter(this.currentChapter);
+          this.updateDashboard();
+        });
+
+        // Clear data
+        document.getElementById('clearDataBtn').addEventListener('click', () => {
+          if (confirm('Are you sure? This will delete all saved progress, notes, and settings!')) {
+            localStorage.removeItem('whh_progress');
+            localStorage.removeItem('whh_notes');
+            localStorage.removeItem('whh_settings');
+            this.progress = {};
+            this.notes = {};
+            location.reload();
+          }
+        });
+
+        // Search
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+          const query = e.target.value.toLowerCase();
+          this.filterChapters(query);
+        });
+
+        // Add note
+        document.getElementById('addNoteBtn')?.addEventListener('click', () => {
+          this.addNote();
+        });
+      }
+
+      // ===== VIEW MANAGEMENT =====
+      switchView(viewName) {
+        document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+        document.getElementById(viewName).classList.add('active');
+
+        if (viewName === 'dashboard') {
+          this.updateDashboard();
+        } else if (viewName === 'quiz') {
+          this.renderQuiz();
+        } else if (viewName === 'notes') {
+          this.renderNotes();
+        }
+      }
+
+      // ===== CHAPTER RENDERING =====
+      renderChapterList() {
+        const list = document.getElementById('chapterList');
+        list.innerHTML = '';
+        
+        this.chapters.forEach((chapter, idx) => {
+          const li = document.createElement('li');
+          li.className = 'chapter-item';
+          if (this.progress[idx]?.completed) {
+            li.classList.add('completed');
+          }
+          if (idx === this.currentChapter) {
+            li.classList.add('active');
+          }
+          li.textContent = this.getText(chapter.title);
+          li.addEventListener('click', () => this.selectChapter(idx));
+          list.appendChild(li);
+        });
+      }
+
+      selectChapter(idx) {
+        this.currentChapter = idx;
+        const chapter = this.chapters[idx];
+        
+        document.getElementById('chapterTitle').textContent = this.getText(chapter.title);
+        document.getElementById('chapterSubtitle').textContent = this.getText(chapter.subtitle);
+        document.getElementById('chapterContent').innerHTML = this.getText(chapter.content);
+        
+        this.progress[idx].lastViewed = new Date().toISOString();
+        this.saveProgress();
+        this.renderChapterList();
+        this.renderNotes();
+      }
+
+      filterChapters(query) {
+        const items = document.querySelectorAll('.chapter-item');
+        items.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(query) ? 'block' : 'none';
+        });
+      }
+
+      // ===== QUIZ MANAGEMENT =====
+      renderQuiz() {
+        const quiz = this.quizzes.find(q => q.chapterId === this.currentChapter);
+        if (!quiz) {
+          document.getElementById('quizContainer').innerHTML = '<p>No quiz available for this chapter yet.</p>';
+          return;
+        }
+
+        let html = `<div class="quiz-container">
+          <div class="quiz-header">
+            <div class="quiz-title">${this.getText(quiz.title)}</div>
+            <div class="quiz-progress">Question ${1} of ${quiz.questions.length}</div>
+          </div>`;
+
+        quiz.questions.forEach((q, idx) => {
+          html += `<div class="question-block">
+            <div class="question-text">Q${idx + 1}: ${this.getText(q.text)}</div>`;
+          q.options.forEach((opt, optIdx) => {
+            html += `<label class="answer-option">
+              <input type="radio" name="q${idx}" value="${optIdx}" data-correct="${opt.correct}">
+              <span>${this.getText(opt.text)}</span>
+            </label>`;
+          });
+          html += `</div>`;
+        });
+
+        html += `<button class="quiz-btn" onclick="app.submitQuiz()">Submit Quiz</button>
+                 <button class="quiz-btn" onclick="app.resetQuiz()">Reset</button>
+                 <div id="quizFeedback"></div></div>`;
+
+        document.getElementById('quizContainer').innerHTML = html;
+      }
+
+      submitQuiz() {
+        const quiz = this.quizzes.find(q => q.chapterId === this.currentChapter);
+        if (!quiz) return;
+
+        let correct = 0;
+        quiz.questions.forEach((q, idx) => {
+          const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+          if (selected) {
+            const isCorrect = selected.dataset.correct === 'true';
+            if (isCorrect) correct++;
+            
+            const option = selected.closest('.answer-option');
+            if (isCorrect) {
+              option.classList.add('correct');
+            } else {
+              option.classList.add('incorrect');
             }
-            let percent = Math.round((completed / chapters.length) * 100);
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressPercent').innerText = percent + '%';
+            selected.disabled = true;
+          }
+        });
+
+        const score = Math.round((correct / quiz.questions.length) * 100);
+        this.progress[this.currentChapter].quizScore = score;
+        this.progress[this.currentChapter].completed = true;
+        this.saveProgress();
+
+        const feedback = document.getElementById('quizFeedback');
+        feedback.innerHTML = `<div class="quiz-feedback feedback-correct">
+          <strong>Quiz Complete!</strong><br>
+          You answered ${correct} out of ${quiz.questions.length} questions correctly.<br>
+          Score: <strong>${score}%</strong>
+        </div>`;
+
+        this.updateDashboard();
+      }
+
+      resetQuiz() {
+        this.renderQuiz();
+      }
+
+      // ===== NOTES MANAGEMENT =====
+      addNote() {
+        const textarea = document.getElementById('noteInput');
+        const text = textarea.value.trim();
+        if (!text) return;
+
+        if (!this.notes[this.currentChapter]) {
+          this.notes[this.currentChapter] = [];
         }
 
-        function renderChapter(id) {
-            const ch = chapters[id];
-            if (!ch) return;
-            currentId = id;
-            const main = document.getElementById('mainContent');
-            let html = `<div class="chapter-title">${ch.title}</div>
-                    <div class="content-box">${ch.content}</div>
-                    <div class="quiz-block"><h3>📝 اختبار متقدم – اختبر فهمك</h3><div id="quizContainer"></div>
-                    <button id="submitBtn">✅ إرسال الإجابات</button>
-                    <div id="quizMsg" style="margin-top:15px;"></div></div>
-                    <div><h3>💬 مراجعات المستخدمين</h3><div id="reviewsList"></div>
-                    <div class="add-review"><input type="text" id="revName" placeholder="اسمك" value="زائر"><textarea id="revText" rows="2" placeholder="أضف مراجعتك أو ملاحظاتك..."></textarea>
-                    <button id="addReviewBtn">➕ أضف مراجعة</button></div></div>
-                    <div class="nav-buttons"><button id="prevBtn" ${id === 0 ? 'disabled' : ''}>⏪ الفصل السابق</button>
-                    <button id="nextBtn" ${id === chapters.length - 1 ? 'disabled' : ''}>الفصل التالي ⏩</button></div>`;
-            main.innerHTML = html;
+        this.notes[this.currentChapter].push({
+          text,
+          timestamp: new Date().toLocaleString()
+        });
 
-            // عرض الأسئلة
-            const quizDiv = document.getElementById('quizContainer');
-            ch.questions.forEach((q, idx) => {
-                let qBlock = document.createElement('div');
-                qBlock.className = 'quiz-question';
-                qBlock.innerHTML = `<p><strong>${idx + 1}. ${q.text}</strong></p>` + q.options.map((opt, oi) => `<label class="quiz-option"><input type="radio" name="q${idx}" value="${oi}"> ${opt}</label>`).join('');
-                quizDiv.appendChild(qBlock);
-            });
+        this.saveNotes();
+        textarea.value = '';
+        this.renderNotes();
+        this.updateDashboard();
+      }
 
-            // استرجاع الإجابات المحفوظة
-            if (userProgress[id] && userProgress[id].answers) {
-                let saved = userProgress[id].answers;
-                for (let i = 0; i < saved.length; i++) {
-                    let radios = document.getElementsByName(`q${i}`);
-                    if (radios && saved[i] !== undefined && radios[saved[i]]) radios[saved[i]].checked = true;
-                }
-                if (userProgress[id].passed) document.getElementById('quizMsg').innerHTML = '<span style="display:inline-block; background:rgba(57, 211, 83, 0.1); border:1px solid #39d353; color:#39d353; padding:8px 16px; border-radius:6px;">✅ سبق أن اجتزت هذا الاختبار بنجاح.</span>';
-            }
+      renderNotes() {
+        const notesList = document.getElementById('notesList');
+        if (!notesList) return;
 
-            // المراجعات
-            let reviews = userReviews[id] || [];
-            let revDiv = document.getElementById('reviewsList');
-            revDiv.innerHTML = reviews.length ? reviews.map(r => `<div class="review-item"><strong>${escapeHtml(r.name)}</strong><br>${escapeHtml(r.text)}</div>`).join('') : '<p>لا توجد مراجعات بعد. كن أول من يقيّم هذا الفصل!</p>';
-
-            document.getElementById('submitBtn').onclick = () => submitQuiz(id);
-            document.getElementById('addReviewBtn').onclick = () => addReview(id);
-            document.getElementById('prevBtn').onclick = () => { if (id > 0) renderChapter(id - 1); };
-            document.getElementById('nextBtn').onclick = () => { if (id < chapters.length - 1) renderChapter(id + 1); };
-            updateActiveButton(id);
+        const notes = this.notes[this.currentChapter] || [];
+        if (notes.length === 0) {
+          notesList.innerHTML = '<p style="color: var(--text-secondary);">No notes for this chapter yet.</p>';
+          return;
         }
 
-        function submitQuiz(id) {
-            const ch = chapters[id];
-            let answers = [], correct = 0;
-            for (let i = 0; i < ch.questions.length; i++) {
-                let radios = document.getElementsByName(`q${i}`);
-                let selected = null;
-                for (let j = 0; j < radios.length; j++) if (radios[j].checked) { selected = j; break; }
-                answers.push(selected);
-                if (selected !== null && selected === ch.questions[i].ans) correct++;
-            }
-            if (answers.includes(null)) {
-                document.getElementById('quizMsg').innerHTML = '<span style="display:inline-block; background:rgba(248, 81, 73, 0.1); border:1px solid #f85149; color:#f85149; padding:8px 16px; border-radius:6px;">⚠️ لم تُجب على جميع الأسئلة. أجب أولاً.</span>';
-                return;
-            }
-            let passed = (correct === ch.questions.length);
-            if (!userProgress[id]) userProgress[id] = {};
-            userProgress[id].answers = answers;
-            userProgress[id].passed = passed;
-            localStorage.setItem('deep_handbook_progress', JSON.stringify(userProgress));
-            updateProgress();
-            let msg = passed ? '🎉 ممتاز! جميع الإجابات صحيحة. تم تحديث تقدمك.' : `❌ أجبت على ${correct} من ${ch.questions.length} إجابة صحيحة. حاول مرة أخرى.`;
-            document.getElementById('quizMsg').innerHTML = `<span style="display:inline-block; background:${passed ? 'rgba(57, 211, 83, 0.1)' : 'rgba(248, 81, 73, 0.1)'}; border:1px solid ${passed ? '#39d353' : '#f85149'}; color:${passed ? '#39d353' : '#f85149'}; padding:8px 16px; border-radius:6px;">${msg}</span>`;
-            if (passed) renderChapter(id);
+        notesList.innerHTML = notes.map((note, idx) => `<div class="note-item">
+          <div class="note-text">${note.text}</div>
+          <div class="note-time">${note.timestamp}</div>
+          <button class="note-delete" onclick="app.deleteNote(${this.currentChapter}, ${idx})">Delete</button>
+        </div>`).join('');
+      }
+
+      deleteNote(chapterId, idx) {
+        this.notes[chapterId].splice(idx, 1);
+        this.saveNotes();
+        this.renderNotes();
+        this.updateDashboard();
+      }
+
+      // ===== DASHBOARD =====
+      updateDashboard() {
+        const completed = Object.values(this.progress).filter(p => p.completed).length;
+        const percentage = Math.round((completed / this.chapters.length) * 100);
+        
+        document.getElementById('completedChapters').textContent = `${completed}/${this.chapters.length}`;
+        document.getElementById('progressFill').style.width = `${percentage}%`;
+        document.getElementById('progressText').textContent = `${percentage}%`;
+
+        const scores = Object.values(this.progress)
+          .filter(p => p.quizScore !== null)
+          .map(p => p.quizScore);
+        const average = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b) / scores.length) : 0;
+        document.getElementById('quizAverage').textContent = scores.length > 0 ? `${average}%` : '--';
+
+        const totalNotes = Object.values(this.notes).reduce((sum, notes) => sum + (notes?.length || 0), 0);
+        document.getElementById('totalNotes').textContent = totalNotes;
+
+        document.getElementById('recentActivity').innerHTML = this.getRecentActivity();
+      }
+
+      getRecentActivity() {
+        let activity = '<ul style="list-style-position: inside;">';
+        const recent = Object.entries(this.progress)
+          .filter(([_, p]) => p.lastViewed)
+          .sort((a, b) => new Date(b[1].lastViewed) - new Date(a[1].lastViewed))
+          .slice(0, 5);
+
+        if (recent.length === 0) {
+          return '<p style="color: var(--text-secondary);">No activity yet. Start learning!</p>';
         }
 
-        function addReview(id) {
-            let name = document.getElementById('revName').value.trim();
-            let text = document.getElementById('revText').value.trim();
-            if (!name || !text) { alert("الرجاء إدخال الاسم والمراجعة"); return; }
-            if (!userReviews[id]) userReviews[id] = [];
-            userReviews[id].push({ name, text });
-            localStorage.setItem('deep_handbook_reviews', JSON.stringify(userReviews));
-            renderChapter(id);
-        }
+        recent.forEach(([idx, p]) => {
+          const chapter = this.chapters[idx];
+          const date = new Date(p.lastViewed).toLocaleDateString();
+          activity += `<li><strong>${this.getText(chapter.title)}</strong> - ${date}</li>`;
+        });
+        activity += '</ul>';
+        return activity;
+      }
 
-        function escapeHtml(str) {
-            return str.replace(/[&<>]/g, function (m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+      // ===== UTILITY FUNCTIONS =====
+      getText(content) {
+        if (typeof content === 'string') return content;
+        return content[this.currentLanguage] || content['en'];
+      }
+    }
 
-        function buildSidebar() {
-            const list = document.getElementById('chapterList');
-            list.innerHTML = '';
-            chapters.forEach(ch => {
-                let li = document.createElement('li');
-                let btn = document.createElement('button');
-                btn.textContent = ch.title;
-                btn.classList.add('chapter-btn');
-                btn.dataset.id = ch.id;
-                btn.onclick = () => renderChapter(ch.id);
-                li.appendChild(btn);
-                list.appendChild(li);
-            });
-        }
-
-        function updateActiveButton(id) {
-            document.querySelectorAll('.chapter-btn').forEach(btn => {
-                if (parseInt(btn.dataset.id) === id) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-        }
-
-        buildSidebar();
-        updateProgress();
-        renderChapter(0);
-    </script>
+    // Initialize app
+    const app = new WHHApp();
+  </script>
 </body>
-
 </html>
